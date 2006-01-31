@@ -11,7 +11,7 @@ use Term::ReadLine;
 use Text::ParseWords;
 use UNIVERSAL qw{can};
 
-our $VERSION = '0.005';
+our $VERSION = '0.006';
 
 my $rdln = Term::ReadLine->new ('Solve Sudoku and other set-allocation puzzles');
 my $OUT = $rdln->OUT || \*STDOUT;
@@ -59,13 +59,14 @@ Warning - Verb '$verb' is not recognized. Enter 'help' for help.
 eod
 	    }
 	  elsif (can (__PACKAGE__, $verb)) {
-	    no strict qw{refs};
-	    &$verb (@args);
-	    use strict qw{refs};
+	    __PACKAGE__->$verb (@args);
 	    }
 	  elsif (can ($su, $verb)) {
-	    my $rslt = $su->$verb (@args);
-	    print "$rslt\n" if defined $rslt && !ref $rslt;
+	    eval {
+		my $rslt = $su->$verb (@args);
+		print "$rslt\n" if defined $rslt && !ref $rslt;
+		};
+	    $@ and print $@;
 	    }
 	  else {
 	    die <<eod;
@@ -83,6 +84,7 @@ print "Dump of the current Games::Sudoku::General object:\n", Dumper ($su);
 }
 
 sub get {
+shift;
 my @rslt = $su->get (@_);
 for (my $inx = 0; $inx < @_; $inx++) {
     print $rslt[$inx] =~ m/\n/s ?
@@ -92,6 +94,7 @@ for (my $inx = 0; $inx < @_; $inx++) {
 }
 
 sub help {
+shift;
 my $os_specific = "_help_$^O";
 __PACKAGE__->can ($os_specific) ? __PACKAGE__->$os_specific :
 pod2usage (-verbose => 2, -exitval => 'NOEXIT',
@@ -118,6 +121,7 @@ print "$rslt\n";
 }
 
 sub source {
+shift;
 my $fn = shift;
 my $fh = FileHandle->new ("<$fn") or die <<eod;
 Error - Failed to open input file $fn.
@@ -245,6 +249,11 @@ the topology. Typically this is row order.
 This command lists the constraints used to provide the most recent
 solution.
 
+=item copy
+
+This command copies the current puzzle to the clipboard. You must have
+the Clipboard module installed to use this command.
+
 =item exit
 
 This command does not correspond to a Games::Sudoku::General method.
@@ -280,6 +289,12 @@ This command instantiates a Games::Sudoku::General object. You get one
 for free when you launch this script; this command is for those cases
 when it's easier to start over with a new object than to reconfigure
 the one you already have. Any arguments get passed to the set() method.
+
+=item paste
+
+This command loads the problem from the clipboard, and displays the
+loaded problem. You must have the Clipboard module installed for this
+to work.
 
 =item problem string
 
@@ -540,7 +555,9 @@ sets to which each cell belongs.
    Documented methods and attributes added
    since 0.001.
  0.004 T. R. Wyant - Documented new use of cube attribute.
- 0.005 T. R. Wyant - Documented new mothods and attributes.
+ 0.005 T. R. Wyant - Documented new methods and attributes.
+ 0.006 T. R. Wyant - Documented new methods. Added exception
+   handling.
 
 =head1 AUTHOR
 
