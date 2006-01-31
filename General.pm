@@ -136,6 +136,12 @@ problem is defined, they also affect the need for whitespace on
 problem input. See the L<problem()|/item_problem> documentation for
 full details.
 
+=item autocopy (boolean)
+
+This attribute, if true, causes the generate() method to attempt to
+copy the generated puzzle to the clipboard. If the Clipboard package
+cannot be loaded, this attribute will be ignored.
+
 =item brick (string, write-only)
 
 This "virtual" attribute is a convenience, which causes the object to
@@ -456,7 +462,7 @@ use warnings;
 
 use base qw{Exporter};
 
-our $VERSION = '0.005';
+our $VERSION = '0.006';
 our @EXPORT_OK = qw{
 	SUDOKU_SUCCESS
 	SUDOKU_NO_SOLUTION
@@ -477,6 +483,13 @@ use constant SUDOKU_SUCCESS => 0;
 use constant SUDOKU_NO_SOLUTION => 1;
 use constant SUDOKU_TOO_HARD => 2;
 use constant SUDOKU_MULTIPLE_SOLUTIONS => 3;
+
+my $clipboard_missing;
+
+BEGIN {
+    eval "use Clipboard;";
+    $clipboard_missing = $@;
+    }
 
 my @status_values = (
     'Success',
@@ -509,8 +522,8 @@ The newly-instantiated object is returned.
 
 sub new {
 my $class = shift;
-my $self = bless {debug => 0, generation_limit => 30, iteration_limit => 0,
-	output_delimiter => ' '}, $class;
+my $self = bless {autocopy => 0, debug => 0, generation_limit => 30,
+    iteration_limit => 0, output_delimiter => ' '}, $class;
 @_ and $self->set (@_);
 $self->{cell} or $self->set (sudoku => 3);
 $self->{symbol_list} or $self->set (symbols => join ' ', '.', 1 .. $self->{largest_set});
@@ -578,6 +591,20 @@ return unless $self->{constraints_used} && defined wantarray;
 return %{$self->{constraints_used}} if wantarray;
 my $rslt = join ' ', grep {$self->{constraints_used}{$_}} qw{F N B T X Y W ?};
 $rslt;
+}
+
+=item $su->copy ();
+
+This method copies the current problem to the clipboard. You must have
+the Clipboard module installed to use this method.
+
+=cut
+
+sub copy {
+my $self = shift;
+$clipboard_missing and croak $clipboard_missing;
+Clipboard->copy ($self->_unload ());
+return;
 }
 
 =item $problem = $su->generate ($min, $max, $const);
@@ -697,6 +724,7 @@ eod
     $self->_constraint_remove ($min, $max, $const);
     my $prob = $self->_unload ('', SUDOKU_SUCCESS);
     $self->problem ($prob);
+    $clipboard_missing or $self->copy ();
     return $prob;
     }
 return;
@@ -704,6 +732,7 @@ return;
 
 my %accessor = (
     allowed_symbols => \&_get_allowed_symbols,
+    autocopy => \&_get_value,
     columns => \&_get_value,
     debug => \&_get_value,
     generation_limit => \&_get_value,
@@ -787,6 +816,21 @@ $rslt;
 }
 
 sub _get_value {$_[0]->{$_[1]}}
+
+
+=item $su->paste ();
+
+This method loads the problem from the clipboard. You must have the
+Clipboard module installed to use this method.
+
+=cut
+
+sub paste {
+my $self = shift;
+$clipboard_missing and croak $clipboard_missing;
+$self->problem (Clipboard->paste ());
+return $self->_unload ();
+}
 
 
 =item $su->problem ($string);
@@ -906,6 +950,7 @@ $self;
 
 my %mutator = (
     allowed_symbols => \&_set_allowed_symbols,
+    autocopy => \&_set_value,
     brick => \&_set_brick,
     columns => \&_set_number,
     debug => \&_set_number,
@@ -2040,6 +2085,9 @@ provided a treasure trove of 'non-standard' Sudoku puzzles.
        attribute.
    Added rows attribute. This changes the default
        output for 'multi-faced' puzzles.
+ 0.006 T. R. Wyant
+   Added copy() and paste() methods, and autocopy
+   attribute.
 
 =head1 SEE ALSO
 
