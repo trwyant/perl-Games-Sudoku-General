@@ -38,7 +38,7 @@ the user has the option of hand-specifying an arbitrary topology.
 
 Even on the standard 9 x 9 Sudoku topology there are variants in which
 unspecified cells are constrained in various ways (odd/even, high/low).
-Such variants are accomodated by defining named sets of allowed
+Such variants are accommodated by defining named sets of allowed
 symbols, and then giving the set name for each unoccupied cell to which
 it applies. See L<allowed_symbols|/item_allowed_symbols> for more
 information and an example.
@@ -136,12 +136,6 @@ problem is defined, they also affect the need for whitespace on
 problem input. See the L<problem()|/item_problem> documentation for
 full details.
 
-=item autocopy (boolean)
-
-This attribute, if true, causes the generate() method to attempt to
-copy the generated puzzle to the clipboard. If the Clipboard package
-cannot be loaded, this attribute will be ignored.
-
 =item brick (string, write-only)
 
 This "virtual" attribute is a convenience, which causes the object to
@@ -170,7 +164,14 @@ generates a topology that looks like this
 The overall size of the puzzle must be a multiple of both the
 horizontal and vertical rectangle size.
 
-Setting this modifies the following "real" attributes:
+Beginning with version 0.005_01, the overall size value is optional,
+and defaults to the product of the horizontal and vertical
+dimensions. B<Note> that I am B<strongly> considering eliminating this
+value, since it appears to me that any value other than the default
+results in an impossible puzzle. As of version 0.005_01, specification
+of the third value is deprecated. 
+
+Setting this attribute modifies the following "real" attributes:
 
  columns is set to the size of the big square;
  symbols is set to "." and the numbers "1", "2",
@@ -282,12 +283,12 @@ The solution will be displayed in order by cell number, with line
 breaks controlled by the L<columns|/item_columns> attribute, just
 like any other solution presented by this package.
 
-For all the 'cube' puzzles, the L</columns> attribute is set to 4, and
-the L<symbols|/item_symbols> attribute to the numbers 1 to the size of
-the largest set (16 for the full cube, 8 for the half or isometric
-cube). I have seen full cube puzzles done with hex digits 0 to F; these
-are handled most easily by setting the L<symbols|/item_symbols>
-attribute appropriately:
+For the 'full' and 'half' cube puzzles, the L</columns> attribute is
+set to 4, and the L<symbols|/item_symbols> attribute to the numbers 1
+to the size of the largest set (16 for the full cube, 8 for the half
+or isometric cube). I have seen full cube puzzles done with hex digits
+0 to F; these are handled most easily by setting the
+L<symbols|/item_symbols> attribute appropriately:
 
  $su->set (cube => 'full', symbols => <<eod);
  . 0 1 2 3 4 5 6 7 8 9 A B C D E F
@@ -298,7 +299,7 @@ attribute appropriately:
 This attribute, if not 0, causes debugging information to be displayed.
 Values other than 0 are not supported, in the sense that the author
 makes no commitment what will happen when a non-zero value is set, and
-further reserves the right to change this behaviour without notice of
+further reserves the right to change this behavior without notice of
 any sort, and without documenting the changes.
 
 =item generation_limit (number)
@@ -462,7 +463,7 @@ use warnings;
 
 use base qw{Exporter};
 
-our $VERSION = '0.006';
+our $VERSION = '0.005_01';
 our @EXPORT_OK = qw{
 	SUDOKU_SUCCESS
 	SUDOKU_NO_SOLUTION
@@ -483,13 +484,6 @@ use constant SUDOKU_SUCCESS => 0;
 use constant SUDOKU_NO_SOLUTION => 1;
 use constant SUDOKU_TOO_HARD => 2;
 use constant SUDOKU_MULTIPLE_SOLUTIONS => 3;
-
-my $clipboard_missing;
-
-BEGIN {
-    eval "use Clipboard;";
-    $clipboard_missing = $@;
-    }
 
 my @status_values = (
     'Success',
@@ -522,8 +516,8 @@ The newly-instantiated object is returned.
 
 sub new {
 my $class = shift;
-my $self = bless {autocopy => 0, debug => 0, generation_limit => 30,
-    iteration_limit => 0, output_delimiter => ' '}, $class;
+my $self = bless {debug => 0, generation_limit => 30, iteration_limit => 0,
+	output_delimiter => ' '}, $class;
 @_ and $self->set (@_);
 $self->{cell} or $self->set (sudoku => 3);
 $self->{symbol_list} or $self->set (symbols => join ' ', '.', 1 .. $self->{largest_set});
@@ -535,10 +529,14 @@ $self;
 
 =item $su->add_set ($name => $cell ...)
 
+=for comment help syntax-highlighting editor "
+
 This method adds to the current topology a new set with the given name,
 and consisting of the given cells. The set name must not already
 exist, but the cells must already exist. In other words, you can't
 modify an existing set with this method, nor can you add new cells.
+
+=for comment help syntax-highlighting editor "
 
 =cut
 
@@ -591,20 +589,6 @@ return unless $self->{constraints_used} && defined wantarray;
 return %{$self->{constraints_used}} if wantarray;
 my $rslt = join ' ', grep {$self->{constraints_used}{$_}} qw{F N B T X Y W ?};
 $rslt;
-}
-
-=item $su->copy ();
-
-This method copies the current problem to the clipboard. You must have
-the Clipboard module installed to use this method.
-
-=cut
-
-sub copy {
-my $self = shift;
-$clipboard_missing and croak $clipboard_missing;
-Clipboard->copy ($self->_unload ());
-return;
 }
 
 =item $problem = $su->generate ($min, $max, $const);
@@ -724,7 +708,6 @@ eod
     $self->_constraint_remove ($min, $max, $const);
     my $prob = $self->_unload ('', SUDOKU_SUCCESS);
     $self->problem ($prob);
-    $clipboard_missing or $self->copy ();
     return $prob;
     }
 return;
@@ -732,7 +715,6 @@ return;
 
 my %accessor = (
     allowed_symbols => \&_get_allowed_symbols,
-    autocopy => \&_get_value,
     columns => \&_get_value,
     debug => \&_get_value,
     generation_limit => \&_get_value,
@@ -816,21 +798,6 @@ $rslt;
 }
 
 sub _get_value {$_[0]->{$_[1]}}
-
-
-=item $su->paste ();
-
-This method loads the problem from the clipboard. You must have the
-Clipboard module installed to use this method.
-
-=cut
-
-sub paste {
-my $self = shift;
-$clipboard_missing and croak $clipboard_missing;
-$self->problem (Clipboard->paste ());
-return $self->_unload ();
-}
 
 
 =item $su->problem ($string);
@@ -950,7 +917,6 @@ $self;
 
 my %mutator = (
     allowed_symbols => \&_set_allowed_symbols,
-    autocopy => \&_set_value,
     brick => \&_set_brick,
     columns => \&_set_number,
     debug => \&_set_number,
@@ -1042,6 +1008,7 @@ sub _set_brick {
 my $self = shift;
 my $name = shift;
 my ($horiz, $vert, $size) = ref $_[0] ? @{$_[0]} : split ',', $_[0];
+$size ||= $horiz * $vert;
 $size % $horiz || $size % $vert and croak <<eod;
 Error - The puzzle size $size must be a multiple of both the horizontal
         brick size $horiz and the vertical brick size $vert.
@@ -1066,10 +1033,14 @@ my $self = shift;
 my $name = shift;
 my $order = shift;
 my $size = $order * $order;
-my $size_minus_1 = $size - 1;
 $self->set (sudoku => $order);
+my $order_minus_1 = $order - 1;
+my $offset = $size * $order;
 for (my $inx = 0; $inx < $size; $inx++) {
-    $self->add_set ("u$inx", map {$_ * $size + $inx} 0 .. $size_minus_1);
+    my $base = floor ($inx / $order) * $size + $inx % $order;
+    $self->add_set ("u$inx", map {
+	my $g = $_ * $offset + $base;
+	(map {$_ * $order + $g} 0 .. $order_minus_1)} 0 .. $order_minus_1);
     }
 }
 
@@ -1307,6 +1278,8 @@ $self->_constrain ();
 
 =item $string = $su->steps ();
 
+=for comment help syntax-highlighting editor "
+
 This method returns the steps taken to solve the problem. If no
 solution was found, it returns the steps taken to determine this. If
 called in list context, you get an actual copy of the list. The first
@@ -1342,6 +1315,8 @@ first cell you defined is 0, the second is 1, and so on.
 The third value is the value assigned to the cell. If returned in
 list context, it is the number assigned to the cell's symbol. If
 in scalar context, it is the symbol itself.
+
+=for comment help syntax-highlighting editor "
 
 =cut
 
@@ -2042,7 +2017,7 @@ mail to the author.
 
 =head1 ACKNOWLEDGMENTS
 
-The authow would like to acknowledge the following, without whom this
+The author would like to acknowledge the following, without whom this
 module would not exist:
 
 Glenn Fowler of AT&T, whose L<http://www.research.att.com/~gsf/sudoku/>
@@ -2085,21 +2060,32 @@ provided a treasure trove of 'non-standard' Sudoku puzzles.
        attribute.
    Added rows attribute. This changes the default
        output for 'multi-faced' puzzles.
- 0.006 T. R. Wyant
-   Added copy() and paste() methods, and autocopy
-   attribute.
+ 0.005_01 T. R. Wyant
+   Fixed problem with 'set corresponding'. Thanks
+       to David Jelinek of Central Michigan University
+       for diagnosing the problem and finding a
+       solution.
+   Corrected spelling.
 
 =head1 SEE ALSO
 
 The Games-Sudoku package by Eugene Kulesha (see
-L<http://search.cpan.org/~jset/>) solves the standard 9x9 version
-of the puzzle.
+L<http://search.cpan.org/dist/Games-Sudoku/>) solves the standard 9x9
+version of the puzzle.
+
+The Games-Sudoku-Component package by Kenichi Ishigaki (see
+L<http://search.cpan.org/dist/Games-Sudoku-Component/>) both
+generates and solves the standard 9x9 version of the puzzle.
+
+The Games-Sudoku-Lite package by Bob O'Neill (see
+L<http://search.cpan.org/dist/Games-Sudoku-Lite/>) solves the
+standard 9x9 version of the puzzle.
 
 The Games-Sudoku-OO package by Michael Cope (see
 L<http://search.cpan.org/~cope/>) also solves the standard
 9x9 version of the puzzle, with an option to solve (to the extent
 possible) a single row, column, or square. The implementation may
-be extensable to other topologies than the standard one.
+be extensible to other topologies than the standard one.
 
 The Games-YASudoku package by Andrew Wyllie (see
 L<http://search.cpan.org/~wyllie/>) also solves the standard
@@ -2112,7 +2098,7 @@ Thomas R. Wyant, III (F<wyant at cpan dot org>)
 
 =head1 COPYRIGHT
 
-Copyright 2005 by Thomas R. Wyant, III
+Copyright 2005, 2006 by Thomas R. Wyant, III
 (F<wyant at cpan dot org>). All rights reserved.
 
 This module is free software; you can use it, redistribute it
