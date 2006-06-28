@@ -22,7 +22,7 @@ usage: sudokug [options]
 
 where the only valid option at the moment is
   -filter
-    supresses the front matter in the output, making the script more
+    suppresses the front matter in the output, making the script more
     useful as a Unix-style filter.
 
 eod
@@ -220,7 +220,7 @@ In theory, any size and topology is possible. What is B<not> possible
 at the moment is the solution of puzzles requiring logic other than
 that given above.
 
-There is one command option: -filter, which supresses the front matter
+There is one command option: -filter, which suppresses the front matter
 to make the script behave more like a traditional Unix filter. Commands
 may be piped or redirected in (e.g.
 
