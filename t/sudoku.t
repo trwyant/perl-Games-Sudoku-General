@@ -5,6 +5,8 @@ use warnings;
 use Games::Sudoku::General;
 use Test;
 
+our $VERSION = '0.001_01';
+
 my $loc = tell DATA;
 my $method;
 my $su;
@@ -770,26 +772,42 @@ C E F B G I D H A
 eod
 
 set corresponding 3
-problem <<eod
-. . . . 5 . . . 4
-5 . 9 . . . . . .
-. . 4 . 9 7 . . 1
-. . . . . 1 . 7 .
-. . . 3 . 4 . . .
-. 1 . 9 . . . . .
-7 . . 8 3 . 9 . .
-. . . . . . 8 . 5
-3 . . . 6 . . . .
-eod
-solution
-test <<eod 'Corresponding-cell sudoku' 'http://www.sudoku.com/forums/viewtopic.php?t=995'
-1 6 7 2 5 8 3 9 4
-5 8 9 4 1 3 2 6 7
-2 3 4 6 9 7 5 8 1
-4 2 3 5 8 1 6 7 9
-9 7 6 3 2 4 1 5 8
-8 1 5 9 7 6 4 2 3
-7 4 2 8 3 5 9 1 6
-6 9 1 7 4 2 8 3 5
-3 5 8 1 6 9 7 4 2
+#
+# problem <<eod
+# . . . . 5 . . . 4
+# 5 . 9 . . . . . .
+# . . 4 . 9 7 . . 1
+# . . . . . 1 . 7 .
+# . . . 3 . 4 . . .
+# . 1 . 9 . . . . .
+# 7 . . 8 3 . 9 . .
+# . . . . . . 8 . 5
+# 3 . . . 6 . . . .
+# eod
+# solution
+# test <<eod 'Corresponding-cell sudoku' 'http://www.sudoku.com/forums/viewtopic.php?t=995'
+# 1 6 7 2 5 8 3 9 4
+# 5 8 9 4 1 3 2 6 7
+# 2 3 4 6 9 7 5 8 1
+# 4 2 3 5 8 1 6 7 9
+# 9 7 6 3 2 4 1 5 8
+# 8 1 5 9 7 6 4 2 3
+# 7 4 2 8 3 5 9 1 6
+# 6 9 1 7 4 2 8 3 5
+# 3 5 8 1 6 9 7 4 2
+# eod
+# I don't really have a book solution for the above problem. So rather
+# than a fake test, I'll just check the topology.
+#
+get topology
+test <<eod 'Corresponding-cell topology' 'David Jelinek of Central Michigan University'
+c0,r0,s0,u0 c1,r0,s0,u1 c2,r0,s0,u2 c3,r0,s1,u0 c4,r0,s1,u1 c5,r0,s1,u2 c6,r0,s2,u0 c7,r0,s2,u1 c8,r0,s2,u2
+c0,r1,s0,u3 c1,r1,s0,u4 c2,r1,s0,u5 c3,r1,s1,u3 c4,r1,s1,u4 c5,r1,s1,u5 c6,r1,s2,u3 c7,r1,s2,u4 c8,r1,s2,u5
+c0,r2,s0,u6 c1,r2,s0,u7 c2,r2,s0,u8 c3,r2,s1,u6 c4,r2,s1,u7 c5,r2,s1,u8 c6,r2,s2,u6 c7,r2,s2,u7 c8,r2,s2,u8
+c0,r3,s3,u0 c1,r3,s3,u1 c2,r3,s3,u2 c3,r3,s4,u0 c4,r3,s4,u1 c5,r3,s4,u2 c6,r3,s5,u0 c7,r3,s5,u1 c8,r3,s5,u2
+c0,r4,s3,u3 c1,r4,s3,u4 c2,r4,s3,u5 c3,r4,s4,u3 c4,r4,s4,u4 c5,r4,s4,u5 c6,r4,s5,u3 c7,r4,s5,u4 c8,r4,s5,u5
+c0,r5,s3,u6 c1,r5,s3,u7 c2,r5,s3,u8 c3,r5,s4,u6 c4,r5,s4,u7 c5,r5,s4,u8 c6,r5,s5,u6 c7,r5,s5,u7 c8,r5,s5,u8
+c0,r6,s6,u0 c1,r6,s6,u1 c2,r6,s6,u2 c3,r6,s7,u0 c4,r6,s7,u1 c5,r6,s7,u2 c6,r6,s8,u0 c7,r6,s8,u1 c8,r6,s8,u2
+c0,r7,s6,u3 c1,r7,s6,u4 c2,r7,s6,u5 c3,r7,s7,u3 c4,r7,s7,u4 c5,r7,s7,u5 c6,r7,s8,u3 c7,r7,s8,u4 c8,r7,s8,u5
+c0,r8,s6,u6 c1,r8,s6,u7 c2,r8,s6,u8 c3,r8,s7,u6 c4,r8,s7,u7 c5,r8,s7,u8 c6,r8,s8,u6 c7,r8,s8,u7 c8,r8,s8,u8
 eod
