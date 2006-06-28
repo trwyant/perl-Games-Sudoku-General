@@ -6,24 +6,40 @@ use warnings;
 use Config;
 use FileHandle;
 use Games::Sudoku::General;
+use Getopt::Long;
 use Pod::Usage;
 use Term::ReadLine;
 use Text::ParseWords;
 use UNIVERSAL qw{can};
 
-our $VERSION = '0.006';
+my %opt;
+
+GetOptions (\%opt, qw{filter}) or die <<eod;
+
+Solve Sudoku and Sudoku-like puzzles.
+
+usage: sudokug [options]
+
+where the only valid option at the moment is
+  -filter
+    supresses the front matter in the output, making the script more
+    useful as a Unix-style filter.
+
+eod
+
+our $VERSION = '0.005_01';
 
 my $rdln = Term::ReadLine->new ('Solve Sudoku and other set-allocation puzzles');
 my $OUT = $rdln->OUT || \*STDOUT;
 
-print $OUT <<eod;
+print $OUT <<eod unless $opt{filter};
 sudokug version $VERSION
 based on Games::Sudoku::General version @{[Games::Sudoku::General->VERSION]}
-Perl $Config{version} under $Config{osname} $Config{osvers}
+Perl $Config{version} under $Config{osname}
 
 Solve Sudoku and other set-allocation puzzles.
 
-Copyright 2005 Thomas R. Wyant, III. All rights reserved.
+Copyright 2005, 2006 Thomas R. Wyant, III. All rights reserved.
 
 Enter 'help' for help, and terms of use.
 
@@ -59,14 +75,13 @@ Warning - Verb '$verb' is not recognized. Enter 'help' for help.
 eod
 	    }
 	  elsif (can (__PACKAGE__, $verb)) {
-	    __PACKAGE__->$verb (@args);
+	    no strict qw{refs};
+	    &$verb (@args);
+	    use strict qw{refs};
 	    }
 	  elsif (can ($su, $verb)) {
-	    eval {
-		my $rslt = $su->$verb (@args);
-		print "$rslt\n" if defined $rslt && !ref $rslt;
-		};
-	    $@ and print $@;
+	    my $rslt = $su->$verb (@args);
+	    print "$rslt\n" if defined $rslt && !ref $rslt;
 	    }
 	  else {
 	    die <<eod;
@@ -84,7 +99,6 @@ print "Dump of the current Games::Sudoku::General object:\n", Dumper ($su);
 }
 
 sub get {
-shift;
 my @rslt = $su->get (@_);
 for (my $inx = 0; $inx < @_; $inx++) {
     print $rslt[$inx] =~ m/\n/s ?
@@ -94,7 +108,6 @@ for (my $inx = 0; $inx < @_; $inx++) {
 }
 
 sub help {
-shift;
 my $os_specific = "_help_$^O";
 __PACKAGE__->can ($os_specific) ? __PACKAGE__->$os_specific :
 pod2usage (-verbose => 2, -exitval => 'NOEXIT',
@@ -106,7 +119,7 @@ print <<eod;
 
 Normally, we would display the documentation for the sudokug
 script here. But unfortunately this depends on the ability to
-spawn the perldoc command, and we don't have this ability under
+spawn the perldoc command, and we do not have this ability under
 Mac OS 9 and earlier. You can find the same thing online at
 http://search.cpan.org/~wyant/Games-Sudoku-General-@{[
     Games::Sudoku::General->VERSION]}/bin/sudokug
@@ -121,7 +134,6 @@ print "$rslt\n";
 }
 
 sub source {
-shift;
 my $fn = shift;
 my $fh = FileHandle->new ("<$fn") or die <<eod;
 Error - Failed to open input file $fn.
@@ -132,7 +144,7 @@ unshift @handles, $fh;
 
 sub _acquire_line {
 my $prompt = shift || 'sudokug> ';
-my $rslt = @handles ? <$handles[0]> : $rdln->readline ($prompt);
+my $rslt = @handles ? <$handles[0]> : -t STDIN ? $rdln->readline ($prompt) : <STDIN>;
 defined $rslt and chomp $rslt;
 $rslt;
 }
@@ -157,6 +169,9 @@ sudokug - Script to solve sudoku-like puzzles.
 =head1 SYNOPSIS
 
  $ sudokug
+
+ (front matter displayed here)
+
  sudokug> problem <<eod
  eod: . . . 4 . . 7 8 9
  eod: 4 . 6 . . . 1 . .
@@ -205,6 +220,18 @@ In theory, any size and topology is possible. What is B<not> possible
 at the moment is the solution of puzzles requiring logic other than
 that given above.
 
+There is one command option: -filter, which supresses the front matter
+to make the script behave more like a traditional Unix filter. Commands
+may be piped or redirected in (e.g.
+
+ sudokug <commands
+
+or
+
+ cat commands | sudokug
+
+) if the user so desires, with or without the -filter option.
+
 Basically, any exposed method in Games::Sudoku::General is a command
 understood by this script. Arguments to the methods are parameters
 to the script commands. A few commands have been added to make life
@@ -249,11 +276,6 @@ the topology. Typically this is row order.
 This command lists the constraints used to provide the most recent
 solution.
 
-=item copy
-
-This command copies the current puzzle to the clipboard. You must have
-the Clipboard module installed to use this command.
-
 =item exit
 
 This command does not correspond to a Games::Sudoku::General method.
@@ -287,14 +309,8 @@ it gets you the POD for Games::Sudoku::General.
 
 This command instantiates a Games::Sudoku::General object. You get one
 for free when you launch this script; this command is for those cases
-when it's easier to start over with a new object than to reconfigure
+when it is easier to start over with a new object than to reconfigure
 the one you already have. Any arguments get passed to the set() method.
-
-=item paste
-
-This command loads the problem from the clipboard, and displays the
-loaded problem. You must have the Clipboard module installed for this
-to work.
 
 =item problem string
 
@@ -317,7 +333,7 @@ details.
 
 =item show name ...
 
-This command does not corespond to a Games::Sudoku::General method,
+This command does not correspond to a Games::Sudoku::General method,
 but is just a synonym for 'get'.
 
 =item solution
@@ -386,7 +402,7 @@ took the guess, and try the next possible value.
 =head2 Attributes
 
 Any readable attribute may be displayed with the 'get' or 'show'
-commands, and any writeable attribute may be set with the 'set'
+commands, and any writable attribute may be set with the 'set'
 command. For example:
 
  sudokug> set allowed_symbols <<eod
@@ -418,6 +434,10 @@ The value is a comma-delimited string of three numbers representing
 the horizontal and vertical dimensions of the rectangular regions, and
 the size of the enclosing square.
 
+The last number may be omitted, with the default being the product of
+the first two. It is in fact deprecated, with the intent of disallowing
+it in the future.
+
 =item columns (number)
 
 This attribute specifies the number of cells displayed on a line of
@@ -435,7 +455,7 @@ L</sudoku>. Also called "disjoint groups".
 =item cube (string, write-only)
 
 This pseudo-attribute sets the topology, symbols, and columns for a
-Sudoko puzzle on the faces of a cube. There are three topologies
+Sudoku puzzle on the faces of a cube. There are three topologies
 supported; two on the face of a 4 x 4 x 4 cube, plus the Dion cube.
 Which one is actually generated is selected by the argument:
 
@@ -556,8 +576,9 @@ sets to which each cell belongs.
    since 0.001.
  0.004 T. R. Wyant - Documented new use of cube attribute.
  0.005 T. R. Wyant - Documented new methods and attributes.
- 0.006 T. R. Wyant - Documented new methods. Added exception
-   handling.
+ 0.005_01 T. R. Wyant
+   Corrected spelling.
+   Allowed input to be redirected or piped in.
 
 =head1 AUTHOR
 
@@ -565,7 +586,7 @@ Thomas R. Wyant, III (F<wyant at cpan dot org>)
 
 =head1 COPYRIGHT
 
-Copyright 2005 by Thomas R. Wyant, III
+Copyright 2005, 2006 by Thomas R. Wyant, III
 (F<wyant at cpan dot org>). All rights reserved.
 
 This module is free software; you can use it, redistribute it
