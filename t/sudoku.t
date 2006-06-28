@@ -511,7 +511,7 @@ test <<eod 'Arbitrary nonomino - Ed Pegg Jr.' $pegg
 7 8 4 5 3 9 6 2 1
 eod
 
-set brick 3,2,6
+set brick 3,2
 get topology
 test <<eod 'Brick topology (3 x 2 bricks in a 6 x 6 square)'
 c0,r0,s0 c1,r0,s0 c2,r0,s0 c3,r0,s1 c4,r0,s1 c5,r0,s1
@@ -783,13 +783,13 @@ problem <<eod
 eod
 solution
 test <<eod 'Corresponding-cell sudoku' 'http://www.sudoku.com/forums/viewtopic.php?t=995'
-1 7 8 2 5 3 6 9 4
-5 6 9 1 4 8 3 2 7
+1 6 7 2 5 8 3 9 4
+5 8 9 4 1 3 2 6 7
 2 3 4 6 9 7 5 8 1
-6 4 3 5 8 1 2 7 9
-9 5 2 3 7 4 1 6 8
-8 1 7 9 2 6 4 5 3
-7 2 1 8 3 5 9 4 6
-4 9 6 7 1 2 8 3 5
-3 8 5 4 6 9 7 1 2
+4 2 3 5 8 1 6 7 9
+9 7 6 3 2 4 1 5 8
+8 1 5 9 7 6 4 2 3
+7 4 2 8 3 5 9 1 6
+6 9 1 7 4 2 8 3 5
+3 5 8 1 6 9 7 4 2
 eod
