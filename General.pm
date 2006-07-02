@@ -463,7 +463,7 @@ use warnings;
 
 use base qw{Exporter};
 
-our $VERSION = '0.005_01';
+our $VERSION = '0.005_02';
 our @EXPORT_OK = qw{
 	SUDOKU_SUCCESS
 	SUDOKU_NO_SOLUTION
@@ -478,7 +478,6 @@ use Carp;
 use Data::Dumper;
 use List::Util qw{first max reduce};
 use POSIX qw{floor};
-use Scalar::Util qw{dualvar looks_like_number};
 
 use constant SUDOKU_SUCCESS => 0;
 use constant SUDOKU_NO_SOLUTION => 1;
@@ -1145,7 +1144,7 @@ sub _set_number {
 my $self = shift;
 my $name = shift;
 my $value = shift;
-looks_like_number ($value) or croak <<eod;
+_looks_like_number ($value) or croak <<eod;
 Error - Attribute $name must be numeric.
 eod
 $self->{$name} = $value;
@@ -1155,7 +1154,7 @@ sub _set_status_value {
 my $self = shift;
 my $name = shift;
 my $value = shift;
-looks_like_number ($value) or croak <<eod;
+_looks_like_number ($value) or croak <<eod;
 Error - Attribute $name must be numeric.
 eod
 $value < 0 || $value >= @status_values and croak <<eod;
@@ -1904,7 +1903,18 @@ foreach (@_) {
 join '', @steps;
 }
 
-#	_get_* subroutines are found right after the get() method.
+#	_looks_like_number is cribbed heavily from
+#	Scalar::Util::looks_like_number by Graham Barr. This version
+#	only accepts integers, but it is really here because
+#	ActivePerl's Scalar::Util is to ancient to export
+#	looks_like_number.
+
+sub _looks_like_number {
+local $_ = shift;
+return 0 if !defined ($_) or ref ($_);
+return 1 if m/^[+-]?\d+$/;
+return 0;
+}
 
 
 #	_set_* subroutines are found right after the set() method.
@@ -2066,6 +2076,9 @@ provided a treasure trove of 'non-standard' Sudoku puzzles.
        for diagnosing the problem and finding a
        solution.
    Corrected spelling.
+ 0.005_02 T. R. Wyant
+   Eliminated Scalar::Util::looks_like_number, since
+       apparently ActivePerl does not have it.
 
 =head1 SEE ALSO
 
