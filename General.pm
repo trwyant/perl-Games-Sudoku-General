@@ -472,7 +472,7 @@ use warnings;
 
 use base qw{Exporter};
 
-our $VERSION = '0.005_04';
+our $VERSION = '0.005_05';
 our @EXPORT_OK = qw{
 	SUDOKU_SUCCESS
 	SUDOKU_NO_SOLUTION
@@ -877,6 +877,78 @@ $rslt;
 }
 
 sub _get_value {$_[0]->{$_[1]}}
+
+
+=item $su->paste ()
+
+This method pastes a problem from the clipboard.
+
+See L<CLIPBOARD SUPPORT> for what is needed for this to work.
+
+=cut
+
+{	#	Begin local symbol block
+
+    my $paster;
+    sub paste {
+    my $self = shift;
+    $paster ||=  $^O eq 'MSWin32' ? _paster_win32 () || croak <<eod :
+Error - Paste from clipboard unavailable. Can not load Win32::Clipboard.
+eod
+	$^O eq 'cygwin' ? _paster_win32 () || _paster_xclip () || croak <<eod :
+Error - Paste from clipboard unavailable. Can not load Win32::Clipboard,
+        and xclip has not been installed. For xclip, see
+	http://freshmeat.net/projects/xclip
+eod
+	$^O eq 'darwin' ? _paster_pbpaste () || _paster_xclip () || croak <<eod :
+Error - Paste from clipboard unavailable. Can not find the pbpaste
+        program, which is supposed to come with Mac OS X. Can not find
+	xclip either. For xclip, see http://freshmeat.net/projects/xclip.
+eod
+	$^O eq 'MacOS' ? croak <<eod :
+Error - Paste from clipboard unavailable under Mac OS 9 or below.
+eod
+	_paster_xclip () || croak <<eod;
+Error - Paste from clipboard unavailable. The xclip program has not been
+        installed. See http://freshmeat.net/projects/xclip for a copy.
+eod
+    $self->problem ($paster->());
+    $self->_unload ();
+    }
+
+
+}	#	End local symbol block
+
+sub _paster_external {
+my ($code, $probe) = @_;
+no warnings qw{exec};
+`$probe`;
+use warnings qw{exec};
+$? ? undef : sub {
+    my $hdl;
+    open ($hdl, "$code|") or croak <<eod;
+Error - failed to open input handle from $code.
+        $!
+eod
+    local $/ = undef;
+    <$hdl>;
+    }
+}
+
+sub _paster_pbpaste {
+_paster_external (pbpaste => 'pbpaste -help 2>&1');
+}
+
+sub _paster_xclip {
+_copier_external ('xclip -o' => 'xclip -o');
+}
+
+sub _paster_win32 {
+eval "use Win32::Clipboard";
+$@ ? undef : sub {
+    Win32::Clipboard->new ()->Get ();
+    }
+}
 
 
 =item $su->problem ($string);
@@ -2197,8 +2269,12 @@ provided a treasure trove of 'non-standard' Sudoku puzzles.
    Add copy() method and autocopy attribute, for getting
        generated puzzles onto the clipboard.
  0.005_04 T. R. Wyant
-   Make copy() try xclip under darwin, just in case we are running
-       "plain" darwin. Correct error handling, too.
+   Make copy() try xclip under darwin, just in case we
+       are running "plain" darwin. Correct error handling,
+       too.
+ 0.005_05 T. R. Wyant
+   Add paste() method, for loading puzzles from the
+       clipboard.
 
 =head1 SEE ALSO
 
