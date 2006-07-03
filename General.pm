@@ -472,7 +472,7 @@ use warnings;
 
 use base qw{Exporter};
 
-our $VERSION = '0.005_03';
+our $VERSION = '0.005_04';
 our @EXPORT_OK = qw{
 	SUDOKU_SUCCESS
 	SUDOKU_NO_SOLUTION
@@ -622,8 +622,9 @@ Error - Copy to clipboard unavailable. Can not load Win32::Clipboard,
 	http://freshmeat.net/projects/xclip
 eod
 	$^O eq 'darwin' ? _copier_pbcopy () || _copier_xclip () || croak <<eod :
-Error - Copy to clipboard unavailable. Can not find the pbcopy program.
-        This is supposed to come with Mac OS X.
+Error - Copy to clipboard unavailable. Can not find the pbcopy program,
+        which is supposed to come with Mac OS X. Can not find xclip
+	either. For xclip, see http://freshmeat.net/projects/xclip.
 eod
 	$^O eq 'MacOS' ? croak <<eod :
 Error - Copy to clipboard unavailable under Mac OS 9 or below.
@@ -638,7 +639,9 @@ eod
 
 sub _copier_external {
 my ($code, $probe) = @_;
+no warnings qw{exec};
 `$probe`;
+use warnings qw{exec};
 $? ? undef : sub {
     my $hdl;
     open ($hdl, "|$code") or croak <<eod;
@@ -2193,6 +2196,9 @@ provided a treasure trove of 'non-standard' Sudoku puzzles.
  0.005_03 T. R. Wyant
    Add copy() method and autocopy attribute, for getting
        generated puzzles onto the clipboard.
+ 0.005_04 T. R. Wyant
+   Make copy() try xclip under darwin, just in case we are running
+       "plain" darwin. Correct error handling, too.
 
 =head1 SEE ALSO
 
