@@ -472,7 +472,7 @@ use warnings;
 
 use base qw{Exporter};
 
-our $VERSION = '0.005_05';
+our $VERSION = '0.005_06';
 our @EXPORT_OK = qw{
 	SUDOKU_SUCCESS
 	SUDOKU_NO_SOLUTION
@@ -1480,6 +1480,18 @@ wantarray ? (@{$self->{backtrack_stack}}) :
     undef;
 }
 
+=item $string = $su->unload ();
+
+This method returns either the current puzzle or the current solution,
+depending on whether the solution() method has been called since the
+puzzle was loaded.
+
+=cut
+
+sub unload {
+my $self = shift;
+$self->_unload ()
+}
 
 ########################################################################
 
@@ -2178,15 +2190,17 @@ really, by the contents of $^O:
 
 Under cygwin, we first try to load the Win32::Clipboard module. If this
 succeeds, we use it. If not, we try to use the xclip program, available
-from http://freshmeat.net/project/xclip.
+from L<http://freshmeat.net/project/xclip>.
 
 =head2 darwin
 
 Under Darwin, also known as Mac OS X, we use the pbcopy programs to
-copy text to the clipboard. This program is supposed to come with Mac
-OS X. If the pbcopy program is not found, we try xclip, under the
-assumption that you are running Darwin without the Mac OS X overlay.
-The xclip program is available from http://freshmeat.net/project/xclip.
+copy text to the clipboard, and pbpaste to retrieve text from the
+clipboard. These programs are supposed to come with Mac OS X. If pbcopy
+or pbpaste (depending on what we are trying to do) is not found, we try
+xclip, under the assumption that you are running Darwin without the Mac
+OS X overlay. The xclip program is available from
+L<http://freshmeat.net/project/xclip>.
 
 =head2 MacOS
 
@@ -2200,7 +2214,7 @@ Under Windows, we use Win32::Clipboard if available.
 =head2 Anything else
 
 Under any other operating system, we try to use the xclip program,
-available from http://freshmeat.net/project/xclip.
+available from L<http://freshmeat.net/project/xclip>.
 
 =head1 BUGS
 
@@ -2275,6 +2289,8 @@ provided a treasure trove of 'non-standard' Sudoku puzzles.
  0.005_05 T. R. Wyant
    Add paste() method, for loading puzzles from the
        clipboard.
+ 0.005_06 T. R. Wyant
+   Add unload() method.
 
 =head1 SEE ALSO
 
