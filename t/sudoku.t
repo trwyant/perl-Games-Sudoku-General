@@ -1,6 +1,8 @@
 
 use t::TestDriver;
 
+our $VERSION = '0.001';
+
 t::TestDriver->execute (*DATA);
 
 __END__
@@ -28,6 +30,18 @@ var gsftax http://www.research.att.com/~gsf/sudoku/taxonomy.dat
 problem <<eod
 ...4..7894.6...1...8.....5.2.4..5....95.........9.2345.3..7.9.8.67..1...9....8..2
 eod
+unload
+test <<eod 'Unload function'
+. . . 4 . . 7 8 9
+4 . 6 . . . 1 . .
+. 8 . . . . . 5 .
+2 . 4 . . 5 . . .
+. 9 5 . . . . . .
+. . . 9 . 2 3 4 5
+. 3 . . 7 . 9 . 8
+. 6 7 . . 1 . . .
+9 . . . . 8 . . 2
+eod
 solution
 test <<eod 'Constraint Taxonomy 1 (F) - Glenn Fowler' $gsftax
 1 2 3 4 5 6 7 8 9
@@ -42,7 +56,7 @@ test <<eod 'Constraint Taxonomy 1 (F) - Glenn Fowler' $gsftax
 eod
 
 constraints_used
-test F
+test F 'Check that we in fact used only the "F" constraint'
 
 set symbols '. A B C D E F G H I'
 problem <<eod
@@ -80,7 +94,7 @@ test <<eod 'Constraint Taxonomy 2 (FN) - Glenn Fowler' $gsftax
 eod
 
 constraints_used
-test 'F N'
+test 'F N' 'Check that we in fact only used the "F" and "N" constraints'
 
 problem <<eod
 ...4..7894.6...1...8.....5.2.4..5....95......6..9.2.4..3..7...8.67......9....8..2
@@ -99,7 +113,7 @@ test <<eod 'Constraint Taxonomy 3 (FN) - Glenn Fowler' $gsftax
 eod
 
 constraints_used
-test 'F N'
+test 'F N' 'Check that we in fact only used the "F" and "N" constraints'
 
 
 problem <<eod
@@ -119,7 +133,7 @@ test <<eod 'Constraint Taxonomy 4 (FNB) - Glenn Fowler' $gsftax
 eod
 
 constraints_used
-test 'F N B'
+test 'F N B' 'Check that we in fact only used the "F", "N" and "B" constraints'
 
 problem <<eod
 ...4..7894.6...1...8.....5.2.4..5....9..........9.2.4..3..7.9.8.67..1...9....8..2
@@ -138,7 +152,7 @@ test <<eod 'Constraint Taxonomy 5 (FNBT) - Glenn Fowler' $gsftax
 eod
 
 constraints_used
-test 'F N B T'
+test 'F N B T' 'Check that we in fact only used the "F", "N", "B", and "T" constraints'
 
 problem <<eod
 ..345...94567..1......2....2.4.....5.....8....3.....4.3.5...9128..6.1..4....3....
@@ -157,7 +171,7 @@ test <<eod 'Constraint Taxonomy 6 (FNT) - Glenn Fowler' $gsftax
 eod
 
 constraints_used
-test 'F N T'
+test 'F N T' 'Check that we in fact only used the "F", "N" and "T" constraints'
 
 problem <<eod
 . 4 5 . 3 2 1 . .
