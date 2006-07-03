@@ -79,10 +79,12 @@ Games::Sudoku::General objects have the following attributes, which may
 normally be accessed by the get() method, and changed by the set()
 method.
 
-In parentheses after the name of the attribute is the word "number"
-or "string", giving the data type of the attribute. The parentheses
-may also contain the words "read-only" to denote a read-only attribute
-or "write-only" to denote a write-only attribute.
+In parentheses after the name of the attribute is the word "boolean",
+"number" or "string", giving the data type of the attribute. Booleans
+are interpreted in the Perl sense: undef, 0, and '' are false, and
+anything else is true. The parentheses may also contain the words
+"read-only" to denote a read-only attribute or "write-only" to denote
+a write-only attribute.
 
 In general, the write-only attributes exist as a convenience to the
 user, and provide a shorthand way to set a cluster of attributes at
@@ -135,6 +137,13 @@ Because symbol set names must be parsed like symbol names when a
 problem is defined, they also affect the need for whitespace on
 problem input. See the L<problem()|/item_problem> documentation for
 full details.
+
+=item autocopy (boolean)
+
+If true, this attribute causes the generate() method to implicitly call
+copy() to copy the generated problem to the clipboard.
+
+This attribute is false by default.
 
 =item brick (string, write-only)
 
@@ -463,7 +472,7 @@ use warnings;
 
 use base qw{Exporter};
 
-our $VERSION = '0.005_02';
+our $VERSION = '0.005_03';
 our @EXPORT_OK = qw{
 	SUDOKU_SUCCESS
 	SUDOKU_NO_SOLUTION
@@ -590,6 +599,73 @@ my $rslt = join ' ', grep {$self->{constraints_used}{$_}} qw{F N B T X Y W ?};
 $rslt;
 }
 
+
+=item $su->copy ()
+
+This method copies the current problem to the clipboard. If solution()
+has been called, the current solution goes on the clipboard.
+
+See L<CLIPBOARD SUPPORT> for what is needed for this to work.
+
+=cut
+
+{	# Local symbol block.
+    my $copier;
+    sub copy {
+    my $self = shift;
+    $copier ||= $^O eq 'MSWin32' ? _copier_win32 () || croak <<eod :
+Error - Copy to clipboard unavailable. Can not load Win32::Clipboard.
+eod
+	$^O eq 'cygwin' ? _copier_win32 () || _copier_xclip () || croak <<eod :
+Error - Copy to clipboard unavailable. Can not load Win32::Clipboard,
+        and xclip has not been installed. For xclip, see
+	http://freshmeat.net/projects/xclip
+eod
+	$^O eq 'darwin' ? _copier_pbcopy () || _copier_xclip () || croak <<eod :
+Error - Copy to clipboard unavailable. Can not find the pbcopy program.
+        This is supposed to come with Mac OS X.
+eod
+	$^O eq 'MacOS' ? croak <<eod :
+Error - Copy to clipboard unavailable under Mac OS 9 or below.
+eod
+	_copier_xclip () || croak <<eod;
+Error - Copy to clipboard unavailable. The xclip program has not been
+        installed. See http://freshmeat.net/projects/xclip for a copy.
+eod
+    $copier->($self->_unload ());
+    }
+}
+
+sub _copier_external {
+my ($code, $probe) = @_;
+`$probe`;
+$? ? undef : sub {
+    my $hdl;
+    open ($hdl, "|$code") or croak <<eod;
+Error - failed to open output handle to $code.
+        $!
+eod
+    print $hdl @_;
+    '';
+    }
+}
+
+sub _copier_pbcopy {
+_copier_external (pbcopy => 'pbcopy -help 2>&1');
+}
+
+sub _copier_xclip {
+_copier_external (xclip => 'xclip -o');
+}
+
+sub _copier_win32 {
+eval "use Win32::Clipboard";
+$@ ? undef : sub {
+    (my $s = join '', @_) =~ s/\n/\r\n/mg;
+    Win32::Clipboard->new ()->Set ($s);
+    }
+}
+
 =item $problem = $su->generate ($min, $max, $const);
 
 This method generates a problem and returns it.
@@ -707,6 +783,7 @@ eod
     $self->_constraint_remove ($min, $max, $const);
     my $prob = $self->_unload ('', SUDOKU_SUCCESS);
     $self->problem ($prob);
+    $self->copy ($prob) if $self->{autocopy};
     return $prob;
     }
 return;
@@ -916,6 +993,7 @@ $self;
 
 my %mutator = (
     allowed_symbols => \&_set_allowed_symbols,
+    autocopy => \&_set_value,
     brick => \&_set_brick,
     columns => \&_set_number,
     debug => \&_set_number,
@@ -2016,6 +2094,39 @@ __END__
 The distribution for this module also contains the script 'sudokug',
 which is a command-driven interface to this module.
 
+=head1 CLIPBOARD SUPPORT
+
+Clipboard support is highly OS-specific. Here is the story by OS - or,
+really, by the contents of $^O:
+
+=head2 cygwin
+
+Under cygwin, we first try to load the Win32::Clipboard module. If this
+succeeds, we use it. If not, we try to use the xclip program, available
+from http://freshmeat.net/project/xclip.
+
+=head2 darwin
+
+Under Darwin, also known as Mac OS X, we use the pbcopy programs to
+copy text to the clipboard. This program is supposed to come with Mac
+OS X. If the pbcopy program is not found, we try xclip, under the
+assumption that you are running Darwin without the Mac OS X overlay.
+The xclip program is available from http://freshmeat.net/project/xclip.
+
+=head2 MacOS
+
+Under MacOS (meaning OS 9 or below) we currently have no way to put
+text onto the clipboard.
+
+=head2 MSWin32
+
+Under Windows, we use Win32::Clipboard if available.
+
+=head2 Anything else
+
+Under any other operating system, we try to use the xclip program,
+available from http://freshmeat.net/project/xclip.
+
 =head1 BUGS
 
 The X, Y, and W constraints (to use Glenn Fowler's terminology) are
@@ -2079,6 +2190,9 @@ provided a treasure trove of 'non-standard' Sudoku puzzles.
  0.005_02 T. R. Wyant
    Eliminated Scalar::Util::looks_like_number, since
        apparently ActivePerl does not have it.
+ 0.005_03 T. R. Wyant
+   Add copy() method and autocopy attribute, for getting
+       generated puzzles onto the clipboard.
 
 =head1 SEE ALSO
 
