@@ -27,7 +27,7 @@ where the only valid option at the moment is
 
 eod
 
-our $VERSION = '0.005_01';
+our $VERSION = '0.006';
 
 my $rdln = Term::ReadLine->new ('Solve Sudoku and other set-allocation puzzles');
 my $OUT = $rdln->OUT || \*STDOUT;
@@ -276,6 +276,12 @@ the topology. Typically this is row order.
 This command lists the constraints used to provide the most recent
 solution.
 
+=item copy
+
+Copt the current puzzle or solution to the clipboard. See the CLIPBOARD
+SUPPORT section of the L<Games::Sudoku::General> documentation for what
+you need to make this work.
+
 =item exit
 
 This command does not correspond to a Games::Sudoku::General method.
@@ -311,6 +317,12 @@ This command instantiates a Games::Sudoku::General object. You get one
 for free when you launch this script; this command is for those cases
 when it is easier to start over with a new object than to reconfigure
 the one you already have. Any arguments get passed to the set() method.
+
+=item paste
+
+Paste a new puzzle from the clipboard. See the CLIPBOARD SUPPORT
+section of the L<Games::Sudoku::General> documentation for what you
+need to make this work.
 
 =item problem string
 
@@ -397,6 +409,11 @@ such cell, the one with the smallest cell number is chosen. If at any
 point a solution becomes impossible, we backtrack to the point we
 took the guess, and try the next possible value.
 
+=item unload
+
+Display the current problem, or its current solution if it has been
+solved.
+
 =back
 
 =head2 Attributes
@@ -425,6 +442,11 @@ command.
 
 This attribute is used to specify and name sets of allowed symbols. See
 above for an example.
+
+=item autocoopy (boolean)
+
+If true (in the Perl sense) generated problems are copied to the
+clipboard.
 
 =item brick (string, write-only)
 
@@ -576,9 +598,11 @@ sets to which each cell belongs.
    since 0.001.
  0.004 T. R. Wyant - Documented new use of cube attribute.
  0.005 T. R. Wyant - Documented new methods and attributes.
- 0.005_01 T. R. Wyant
+ 0.006 T. R. Wyant
    Corrected spelling.
    Allowed input to be redirected or piped in.
+   Added -filter option.
+   Document new methods and attribites
 
 =head1 AUTHOR
 
