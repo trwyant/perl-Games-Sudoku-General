@@ -472,7 +472,7 @@ use warnings;
 
 use base qw{Exporter};
 
-our $VERSION = '0.005_06';
+our $VERSION = '0.006';
 our @EXPORT_OK = qw{
 	SUDOKU_SUCCESS
 	SUDOKU_NO_SOLUTION
@@ -2270,26 +2270,18 @@ provided a treasure trove of 'non-standard' Sudoku puzzles.
        attribute.
    Added rows attribute. This changes the default
        output for 'multi-faced' puzzles.
- 0.005_01 T. R. Wyant
+ 0.006 T. R. Wyant
    Fixed problem with 'set corresponding'. Thanks
        to David Jelinek of Central Michigan University
        for diagnosing the problem and finding a
        solution.
    Corrected spelling.
- 0.005_02 T. R. Wyant
    Eliminated Scalar::Util::looks_like_number, since
        apparently ActivePerl does not have it.
- 0.005_03 T. R. Wyant
    Add copy() method and autocopy attribute, for getting
        generated puzzles onto the clipboard.
- 0.005_04 T. R. Wyant
-   Make copy() try xclip under darwin, just in case we
-       are running "plain" darwin. Correct error handling,
-       too.
- 0.005_05 T. R. Wyant
    Add paste() method, for loading puzzles from the
        clipboard.
- 0.005_06 T. R. Wyant
    Add unload() method.
 
 =head1 SEE ALSO
