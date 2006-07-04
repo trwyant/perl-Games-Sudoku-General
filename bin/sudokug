@@ -278,7 +278,7 @@ solution.
 
 =item copy
 
-Copt the current puzzle or solution to the clipboard. See the CLIPBOARD
+Copy the current puzzle or solution to the clipboard. See the CLIPBOARD
 SUPPORT section of the L<Games::Sudoku::General> documentation for what
 you need to make this work.
 
@@ -443,7 +443,7 @@ command.
 This attribute is used to specify and name sets of allowed symbols. See
 above for an example.
 
-=item autocoopy (boolean)
+=item autocopy (boolean)
 
 If true (in the Perl sense) generated problems are copied to the
 clipboard.
