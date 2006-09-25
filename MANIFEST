@@ -1,6 +1,6 @@
 bin/sudokug
 Changes
-General.pm
+lib/Games/Sudoku/General.pm
 Makefile.PL
 MANIFEST
 README

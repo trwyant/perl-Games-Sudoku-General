@@ -472,7 +472,7 @@ use warnings;
 
 use base qw{Exporter};
 
-our $VERSION = '0.006';
+our $VERSION = '0.006_01';
 our @EXPORT_OK = qw{
 	SUDOKU_SUCCESS
 	SUDOKU_NO_SOLUTION

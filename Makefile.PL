@@ -75,7 +75,7 @@ my $vers = '';
 WriteMakefile (
 ##	(MM->can ('signature_target') ? (SIGN => 1) : ()),
 	NAME => 'Games::Sudoku::General',
-	VERSION_FROM => 'General.pm',
+	VERSION_FROM => 'lib/Games/Sudoku/General.pm',
 	PREREQ_PM => {
 			},
 	EXE_FILES => \@exe_files,
