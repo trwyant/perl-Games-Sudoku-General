@@ -1,6 +1,7 @@
 bin/sudokug
 Changes
 lib/Games/Sudoku/General.pm
+Build.PL
 Makefile.PL
 MANIFEST
 README
@@ -12,3 +13,4 @@ t/pod.t
 t/pod_coverage.t
 t/sudoku.t
 t/TestDriver.pm
+META.yml
