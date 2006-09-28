@@ -13,7 +13,7 @@ BEGIN {
     };
 }
 
-our $VERSION = '0.001';
+our $VERSION = '0.001_01';
 
 if ($skip) {
     skip ($skip, 1);
@@ -28,6 +28,7 @@ cell's
 cubical
 darwin
 Fowler's
+Guine
 Ishigaki
 Kenichi
 Kulesha
@@ -48,6 +49,7 @@ square's
 Sudoku
 sudoku
 sudokug
+SudokuTk
 sudokux
 trove
 Wasabi
