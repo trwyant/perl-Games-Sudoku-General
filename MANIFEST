@@ -1,5 +1,8 @@
 bin/sudokug
 Changes
+eg/README
+eg/simple
+eg/solver
 lib/Games/Sudoku/General.pm
 Build.PL
 Makefile.PL
