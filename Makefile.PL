@@ -3,7 +3,7 @@ use ExtUtils::MakeMaker qw{WriteMakefile prompt};
 use FileHandle;
 use Getopt::Std;
 
-our $VERSION = '0.002';
+our $VERSION = '0.002_01';
 
 my %opt;
 getopts ('n', \%opt) or die <<eod;
@@ -87,5 +87,6 @@ WriteMakefile (
 		AUTHOR => 'Tom Wyant (wyant at cpan dot org)',
 		ABSTRACT => 'Solve Sudoku and related puzzles',
 		BINARY_LOCATION => "$Config{archname}$vers/Games-Sudoku-General.tar.gz",
+		LICENSE => 'perl',
 		) : (),
 	);
