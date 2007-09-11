@@ -472,7 +472,7 @@ use warnings;
 
 use base qw{Exporter};
 
-our $VERSION = '0.007';
+our $VERSION = '0.007_01';
 our @EXPORT_OK = qw{
 	SUDOKU_SUCCESS
 	SUDOKU_NO_SOLUTION
@@ -709,7 +709,7 @@ with each constraint name possibly followed by an equals sign and a
 number to specify that that constraint can be used only a certain
 number of times. For example, 'F N ?=1' specifies a puzzle to be
 solved by use of any number of applications of the F and N constraints,
-and at must one guessed cell. If specified as a hash reference, the
+and at most one guessed cell. If specified as a hash reference, the
 keys are the constraint names, and the values are the usage counts,
 with undef meaning no limit. The hash reference corresponding to
 'F N ?=1' is {F => undef, N => undef, '?' => 1}. The default for this
