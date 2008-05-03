@@ -9,7 +9,7 @@ BEGIN {
     };
 }
 
-our $VERSION = '0.002_01';
+our $VERSION = '0.002_02';
 
 add_stopwords (<DATA>);
 
@@ -37,6 +37,8 @@ pbcopy
 pbpaste
 Pegg
 quads
+quincunx
+samurai
 square's
 Sudoku
 sudoku
@@ -45,6 +47,7 @@ SudokuTk
 sudokux
 trove
 Wasabi
+webcmd
 Wyant
 Wyllie
 xclip
