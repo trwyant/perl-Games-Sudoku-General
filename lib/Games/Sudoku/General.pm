@@ -415,7 +415,13 @@ specified, it defaults to the smallest possible.
 
 To be specific,
 
- $su->set (quincunx => 3)
+ $su->set(quincunx => 3)
+
+is equivalent to
+
+ $su->set(quincunx => [3, 1])
+
+and both specify the 'Samurai Sudoku' configuration.
 
 The actual topology is set up as a square of (2 * order + gap) * order
 cells on a side, with the cells in the gap being unused. The sets used
@@ -425,8 +431,38 @@ middle, bottom left, and bottom right. In the case of the 's' sets, this
 would result in duplicate sets being generated in the overlap area, so
 the lower-numbered 's' set is suppressed.
 
-Problems are specified left-to-right by rows. B<The cells in the gaps
-must be specified as empty (typically as '.').>
+Problems are specified left-to-right by rows. The cells in the gaps are
+unused, and are not specified. For example, the May 2, 2008 'Samurai
+Sudoku' problem could be specified as
+
+ . . .  . . 1  . . .         . . .  4 . .  . . .
+ . . .  . 3 .  6 . .         . . 7  . 2 .  . . .
+ . . .  7 . .  . 5 .         . 4 .  . . 5  . . .
+
+ . . 6  9 . .  . . 7         6 . .  . . 9  1 . .
+ . 5 .  . 2 .  . 4 .         . 2 .  . 5 .  . 9 .
+ 4 . .  . . 5  2 . .         . . 8  1 . .  . . 7
+
+ . 2 .  . . 4  . . .  . 8 .  . . .  3 . .  . 2 .
+ . . 5  . 6 .  . . .  4 . 5  . . .  . 8 .  4 . .
+ . . .  1 . .  . . .  . 7 .  . . .  . . 7  . . .
+
+               . 4 .  . 6 .  . 2 .
+               6 . 7  8 . 9  4 . 1
+               . 1 .  . 4 .  . 3 .
+
+ . . .  7 . .  . . .  . 9 .  . . .  . . 6  . . .
+ . . 8  . 2 .  . . .  2 . 8  . . .  . 8 .  5 . .
+ . 4 .  . . 3  . . .  . 5 .  . . .  3 . .  . 2 .
+
+ 2 . .  . . 7  8 . .         . . 4  1 . .  . . 6
+ . 3 .  . 5 .  . 4 .         . 3 .  . 2 .  . 4 .
+ . . 4  8 . .  . . 7         2 . .  . . 3  1 . .
+
+ . . .  9 . .  . 1 .         . 5 .  . . 8  . . .
+ . . .  . 6 .  9 . .         . . 7  . 4 .  . . .
+ . . .  . . 4  . . .         . . .  2 . .  . . .
+
 
 Setting this attribute causes the rows and columns attributes to be set
 to (2 * order + gap) * order. The symbols attribute is set to '.' and
@@ -542,7 +578,7 @@ use warnings;
 
 use base qw{Exporter};
 
-our $VERSION = '0.007_02';
+our $VERSION = '0.007_03';
 our @EXPORT_OK = qw{
 	SUDOKU_SUCCESS
 	SUDOKU_NO_SOLUTION
@@ -905,6 +941,7 @@ my %accessor = (
     columns => \&_get_value,
     debug => \&_get_value,
     generation_limit => \&_get_value,
+##    ignore_unused => \&_get_value,
     iteration_limit => \&_get_value,
     largest_set => \&_get_value,
     name => \&_get_value,
@@ -1127,6 +1164,9 @@ foreach (split (($self->{biggest_spec} > 1 ? '\s+' : ''), $val)) {
 Error - Too many cell specifications. The topology allows only $max.
 eod
     next unless defined $_;
+    # was $self->{ignore_unused}
+    $self->{cells_unused} && !@{$self->{cell}[$inx]{membership}}
+	and do {$inx++; redo};
     $self->{allowed_symbols}{$_} and do {
 	$self->{debug} > 1 and print <<eod;
 Debug problem - Cell $inx allows symbol set $_
@@ -1159,10 +1199,17 @@ eod
     $inx++;
     }
 
-$inx == @{$self->{cell}} or croak <<eod;
+unless ($inx == $max) {
+    # was $self->{ignore_unused}
+    $self->{cells_unused} and do {
+	$inx -= $self->{cells_unused};
+	$max -= $self->{cells_unused};
+    };
+    croak <<eod;
 Error - Not enough cell specifications. you gave $inx but the topology
         defined $max.
 eod
+}
 
 $self->{constraints_used} = {};
 
@@ -1190,6 +1237,7 @@ my %mutator = (
     corresponding => \&_set_corresponding,
     cube => \&_set_cube,
     generation_limit => \&_set_number,
+##    ignore_unused => \&_set_value,
     iteration_limit => \&_set_number,
     latin => \&_set_latin,
     max_tuple => \&_set_number,
@@ -2360,9 +2408,14 @@ my $row = $self->{rows} ||= floor (@{$self->{cell}} / $col);
 my $fmt = "%$self->{biggest_symbol}s";
 foreach (@{$self->{cell}}) {
     $col == $self->{columns} and $rslt .= $prefix;
-    $rslt .= sprintf $fmt, $self->{symbol_list}[$_->{content} || 0];
+    # was $self->{ignore_unused}
+    $rslt .= ($self->{cells_unused} && !@{$_->{membership}}) ?
+	sprintf ($fmt, ' ') :
+	sprintf ($fmt, $self->{symbol_list}[$_->{content} || 0]);
     if (--$col > 0) {$rslt .= $self->{output_delimiter}}
       else {
+	# was $self->{ignore_unused}
+	$self->{cells_unused} and $rslt =~ s/\s+$//m;
 	$rslt .= "\n";
 	$col = $self->{columns};
 	if (--$row <= 0) {
@@ -2502,6 +2555,8 @@ provided a treasure trove of 'non-standard' Sudoku puzzles.
    Add 'null' attribute to generate a puzzle with no topology.
    Add 'quincunx' attribute to generate a quincunx (a.k.a.
      'Samurai Sudoku')
+ 0.007_03 T. R. Wyant
+   Skip unused cells in problem() and unload().
 
 =head1 SEE ALSO
 
