@@ -27,7 +27,7 @@ where the only valid option at the moment is
 
 eod
 
-our $VERSION = '0.006_01';
+our $VERSION = '0.006_02';
 
 my $rdln = Term::ReadLine->new ('Solve Sudoku and other set-allocation puzzles');
 my $OUT = $rdln->OUT || \*STDOUT;
@@ -182,7 +182,7 @@ unshift @handles, $fh;
 
 sub _acquire_line {
 my $prompt = shift || 'sudokug> ';
-my $rslt = @handles ? <$handles[0]> : -t STDIN ? $rdln->readline ($prompt) : <STDIN>;
+my $rslt = @handles ? $handles[0]->getline() : -t STDIN ? $rdln->readline ($prompt) : <STDIN>;
 defined $rslt and chomp $rslt;
 $rslt;
 }
@@ -684,6 +684,8 @@ preferred browser.
  0.006_01 T. R. Wyant
    Added the 'webcmd' pseudo-attribute.
    Small documentation tweaks.
+ 0.006_02 T. R. Wyant
+   Fix the 'source' command.
 
 =head1 AUTHOR
 
