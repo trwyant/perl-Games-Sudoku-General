@@ -17,3 +17,4 @@ CVS/
 ^t/sudoku_quincunx.t$
 \.swp$
 \.tar\.gz$
+^TODO$
