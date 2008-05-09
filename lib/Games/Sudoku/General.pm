@@ -425,11 +425,16 @@ and both specify the 'Samurai Sudoku' configuration.
 
 The actual topology is set up as a square of (2 * order + gap) * order
 cells on a side, with the cells in the gap being unused. The sets used
-are r0 ... for rows, c0 ... for columns, and s0 ... for squares, with
-the sets being generally applied in the order top left, top right,
-middle, bottom left, and bottom right. In the case of the 's' sets, this
-would result in duplicate sets being generated in the overlap area, so
-the lower-numbered 's' set is suppressed.
+are the same as for sudoku of the same order, but with 'g0' through 'g4'
+prepended to their names, with g0 being the top left sudoku grid, g1 the
+top right, g2 the middle, g3 the bottom left, and g4 the bottom right.
+
+In the case of the 's' sets, this would result in duplicate sets being
+generated in the overlap area, so the 's' set from the higher-numbered
+grid is suppressed. For example, in the 'Samurai Sudoku' configuration,
+sets g0s8, g1s6, g2s6, and g2s8 contain exactly the same cells as g2s0,
+g2s2, g3s2, and g4s0 respectively, so the latter are suppressed, and
+only the former appear in the topology.
 
 Problems are specified left-to-right by rows. The cells in the gaps are
 unused, and are not specified. For example, the May 2, 2008 'Samurai
@@ -578,7 +583,7 @@ use warnings;
 
 use base qw{Exporter};
 
-our $VERSION = '0.007_04';
+our $VERSION = '0.007_05';
 our @EXPORT_OK = qw{
 	SUDOKU_SUCCESS
 	SUDOKU_NO_SOLUTION
@@ -1535,23 +1540,26 @@ eod
     my @sqinx = map $_ .. $_ + $order - 1, map $_ * $cols, 0 .. $order - 1;
     my @sqloc = map $_ * $order, @sqinx;
     my @sqgened;	# 's' sets generated, by origin cell.
-    # Create the row sets. r0 .. r8 are for the top left, r9 .. r17 are
-    # the top right, r18 .. r26 are the middle, r27 .. r35 are the
-    # bottom left, and r36 .. r44 are the bottom right. The same logic
-    # applies for the column sets c0 .. c44. The square sets are a bit
-    # more complex because we get duplicates if we just lay them down
-    # blindly.
-    foreach my $inx (0 .. $limit) {
-	my $id = $inx;
-	my $offset = $inx * $cols;
-	foreach my $sqr (@squares) {
+    # Crete the row, column, and square sets. These have the same names
+    # as those created by the corresponding 'sudoku' topology, but with
+    # 'g0' .. 'g4' prepended, representing the five individual
+    # 'standard' sudoku grids. For topology 'quincunx 3', the top left
+    # cell is in sets g0c0,g0r0,g0s0, the top right in g1c8,g1r0,g1s2,
+    # and so on. Because some of the 's' sets are duplicates, the
+    # higher-numbered ones are supressed. In topology 'quincunx 3', set
+    # g0s8 is the same as g2s0, so the latter is supressed.
+    foreach my $grid (0 .. $#squares) {
+	my $sqr = $squares[$grid];
+	foreach my $inx (0 .. $limit) {
+	    my $offset = $inx * $cols;
 	    my $o1 = $offset + $sqr;
-	    $self->add_set("r$id" => $o1 .. $o1 + $limit);
-	    $self->add_set("c$id" => map $_ + $inx + $sqr, @colinx);
+	    $self->add_set("g${grid}r$inx" => $o1 .. $o1 + $limit);
+	    $self->add_set("g${grid}c$inx" => map $_ + $inx + $sqr,
+		@colinx);
 	    $o1 = $sqloc[$inx] + $sqr;
 	    $sqgened[$o1]++
-		or $self->add_set("s$id" => map $_ + $o1, @sqinx);
-	    $id += $osq;
+		or $self->add_set("g${grid}s$inx" => map $_ + $o1,
+		@sqinx);
 	}
     }
 }
