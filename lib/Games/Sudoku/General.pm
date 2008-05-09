@@ -578,7 +578,7 @@ use warnings;
 
 use base qw{Exporter};
 
-our $VERSION = '0.007_03';
+our $VERSION = '0.007_04';
 our @EXPORT_OK = qw{
 	SUDOKU_SUCCESS
 	SUDOKU_NO_SOLUTION
@@ -833,6 +833,7 @@ in a typical Sudoku puzzle. My experience with the default is:
  cube 3          default is too large
  cube half       default is OK
  cube full       default is OK
+ quincunx 3      default is too large
  sudoku 3        default is OK
  sudoku 4        default is OK
  sudokux 3       default is OK
@@ -879,10 +880,14 @@ one solution.
 
 =cut
 
+
 sub generate {
 my $self = shift;
-my $min = shift || floor floor (@{$self->{cell}} * @{$self->{cell}} /
+my $size = @{$self->{cell}} - $self->{cells_unused};
+my $min = shift || do {
+    floor ($size * $size /
 	($self->{largest_set} * keys %{$self->{set}}));
+};
 my $max = shift || floor ($min * 1.5);
 my $const = shift || 'F N B T';
 croak <<eod if ref $const && ref $const ne 'HASH';
@@ -899,22 +904,26 @@ $self->{debug} and do {
 Debug generate ($min, $max, @{[Dumper $const]})
 eod
     };
-my $size = @{$self->{cell}};
 my $syms = @{$self->{symbol_list}} - 1;
 croak <<eod if $min > $size;
 Error - You specified a minimum of $min given values, but the puzzle
         only contains $size cells.
 eod
 my $tries = $self->{generation_limit};
+$size = @{$self->{cell}};	# Note equivocation on $size.
 local $Data::Dumper::Terse = 1;
+my @universe = $self->{cells_unused} ?
+grep @{$self->{cell}[$_]{membership}}, (0 .. @{$self->{cell}} - 1) :
+(0 .. @{$self->{cell}} - 1);
 while (--$tries >= 0) {
     $self->problem ();	# We rely on this specifying an empty problem.
-    my @ix = (0 .. $size - 1);
+##    my @ix = (0 .. $size - 1);
+    my @ix = @universe;
     my $gen = 0;
     while ($gen++ < $min) {
 	my ($inx) = splice @ix, floor (rand scalar @ix), 1;
 	my $cell = $self->{cell}[$inx];
-	@{$cell->{membership}} or redo;	# Ignore unused cells.
+##	@{$cell->{membership}} or redo;	# Ignore unused cells.
 	my @pos = grep {!$cell->{possible}{$_}} 1 .. $syms or next;
 	my $val = $pos[floor (rand scalar @pos)];
 	defined $val or confess <<eod, Dumper ($cell->{possible});
@@ -1129,7 +1138,7 @@ my $self = shift;
 my $val = shift || '';
 $val =~ m/\S/ or
     $val = "$self->{symbol_list}[0] " x
-    scalar @{$self->{cell}};
+    (scalar @{$self->{cell}} - $self->{cells_unused});
 $val =~ s/\s+//g unless $self->{biggest_spec} > 1;
 $val =~ s/^\s+//;
 $val =~ s/\s+$//;
@@ -2557,6 +2566,8 @@ provided a treasure trove of 'non-standard' Sudoku puzzles.
      'Samurai Sudoku')
  0.007_03 T. R. Wyant
    Skip unused cells in problem() and unload().
+ 0.007_04 T. R. Wyant
+   Make generate() work (tho not well) on quincunx.
 
 =head1 SEE ALSO
 
