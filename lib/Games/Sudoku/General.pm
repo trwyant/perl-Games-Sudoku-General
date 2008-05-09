@@ -583,7 +583,7 @@ use warnings;
 
 use base qw{Exporter};
 
-our $VERSION = '0.007_05';
+our $VERSION = '0.008';
 our @EXPORT_OK = qw{
 	SUDOKU_SUCCESS
 	SUDOKU_NO_SOLUTION
@@ -2564,18 +2564,13 @@ provided a treasure trove of 'non-standard' Sudoku puzzles.
      and other documentation tweaks.
    Moved General.pm to lib/Games/Sudoku.
    Added Build.PL
- 0.007_01 T. R. Wyant
+ 0.008 T. R. Wyant
    Tweak docs.
- 0.007_02 T. R. Wyant
    Support unused cells.
    Add drop_set() method to undo add_set().
    Add 'null' attribute to generate a puzzle with no topology.
    Add 'quincunx' attribute to generate a quincunx (a.k.a.
      'Samurai Sudoku')
- 0.007_03 T. R. Wyant
-   Skip unused cells in problem() and unload().
- 0.007_04 T. R. Wyant
-   Make generate() work (tho not well) on quincunx.
 
 =head1 SEE ALSO
 

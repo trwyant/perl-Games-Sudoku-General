@@ -27,7 +27,7 @@ where the only valid option at the moment is
 
 eod
 
-our $VERSION = '0.006_02';
+our $VERSION = '0.007';
 
 my $rdln = Term::ReadLine->new ('Solve Sudoku and other set-allocation puzzles');
 my $OUT = $rdln->OUT || \*STDOUT;
@@ -681,10 +681,9 @@ preferred browser.
    Allowed input to be redirected or piped in.
    Added -filter option.
    Document new methods and attributes.
- 0.006_01 T. R. Wyant
+ 0.007 T. R. Wyant
    Added the 'webcmd' pseudo-attribute.
    Small documentation tweaks.
- 0.006_02 T. R. Wyant
    Fix the 'source' command.
 
 =head1 AUTHOR
