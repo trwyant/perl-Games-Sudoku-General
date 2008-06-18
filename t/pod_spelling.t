@@ -17,6 +17,7 @@ all_pod_files_spelling_ok ();
 __DATA__
 autocopy
 cell's
+CPSearch
 cubical
 darwin
 Fowler's
@@ -45,6 +46,7 @@ sudoku
 sudokug
 SudokuTk
 sudokux
+TkPlayer
 trove
 Wasabi
 webcmd
