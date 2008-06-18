@@ -576,6 +576,8 @@ This package provides the following public methods:
 
 =cut
 
+use 5.006;	# For 'our', at least.
+
 package Games::Sudoku::General;
 
 use strict;
@@ -583,7 +585,7 @@ use warnings;
 
 use base qw{Exporter};
 
-our $VERSION = '0.008';
+our $VERSION = '0.008_01';
 our @EXPORT_OK = qw{
 	SUDOKU_SUCCESS
 	SUDOKU_NO_SOLUTION
@@ -2571,6 +2573,9 @@ provided a treasure trove of 'non-standard' Sudoku puzzles.
    Add 'null' attribute to generate a puzzle with no topology.
    Add 'quincunx' attribute to generate a quincunx (a.k.a.
      'Samurai Sudoku')
+ 0.008_01 T. R. Wyant
+   'use 5.006', for 'our' at the very least.
+   Update 'SEE ALSO'
 
 =head1 SEE ALSO
 
@@ -2581,6 +2586,14 @@ version of the puzzle.
 The Games-Sudoku-Component package by Kenichi Ishigaki (see
 L<http://search.cpan.org/dist/Games-Sudoku-Component/>) both
 generates and solves the standard 9x9 version of the puzzle.
+
+The Games-Sudoku-Component-TkPlayer by Kenichi Ishigaki (see
+L<http://search.cpan.org/dist/Games-Sudoku-Component-TkPlayer/>). Tk
+front end for his Games-Sudoku-Component.
+
+The Games-Sudoku-CPSearch package by Martin-Louis Bright (see
+L<http://search.cpan.prg/dist/Games-Sudoku-CPSearch/>). Solves 9x9
+Sudoku by use of "F" and "N" constraints and backtracking.
 
 The Games-Sudoku-Lite package by Bob O'Neill (see
 L<http://search.cpan.org/dist/Games-Sudoku-Lite/>) solves the standard
