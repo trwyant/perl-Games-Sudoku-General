@@ -585,7 +585,7 @@ use warnings;
 
 use base qw{Exporter};
 
-our $VERSION = '0.008_01';
+our $VERSION = '0.008_02';
 our @EXPORT_OK = qw{
 	SUDOKU_SUCCESS
 	SUDOKU_NO_SOLUTION
@@ -2576,6 +2576,8 @@ provided a treasure trove of 'non-standard' Sudoku puzzles.
  0.008_01 T. R. Wyant
    'use 5.006', for 'our' at the very least.
    Update 'SEE ALSO'
+ 0.008_02 T. R. Wyant
+   add =head1 LICENSE to POD.
 
 =head1 SEE ALSO
 
@@ -2624,8 +2626,11 @@ Thomas R. Wyant, III (F<wyant at cpan dot org>)
 Copyright 2005, 2006, 2008 by Thomas R. Wyant, III
 (F<wyant at cpan dot org>). All rights reserved.
 
-This module is free software; you can use it, redistribute it
-and/or modify it under the same terms as Perl itself.
+=head1 LICENSE
+
+This module is free software; you can use it, redistribute it and/or
+modify it under the same terms as Perl itself. Please see
+L<http://perldoc.perl.org/index-licence.html> for the current licenses.
 
 =cut
 
