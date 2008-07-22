@@ -585,7 +585,7 @@ use warnings;
 
 use base qw{Exporter};
 
-our $VERSION = '0.008_02';
+our $VERSION = '0.009';
 our @EXPORT_OK = qw{
 	SUDOKU_SUCCESS
 	SUDOKU_NO_SOLUTION
@@ -2573,10 +2573,9 @@ provided a treasure trove of 'non-standard' Sudoku puzzles.
    Add 'null' attribute to generate a puzzle with no topology.
    Add 'quincunx' attribute to generate a quincunx (a.k.a.
      'Samurai Sudoku')
- 0.008_01 T. R. Wyant
+ 0.009 T. R. Wyant
    'use 5.006', for 'our' at the very least.
    Update 'SEE ALSO'
- 0.008_02 T. R. Wyant
    add =head1 LICENSE to POD.
 
 =head1 SEE ALSO
