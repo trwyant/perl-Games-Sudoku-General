@@ -10,7 +10,6 @@ use Getopt::Long;
 use Pod::Usage;
 use Term::ReadLine;
 use Text::ParseWords;
-use UNIVERSAL qw{can};
 
 my %opt;
 
@@ -27,7 +26,7 @@ where the only valid option at the moment is
 
 eod
 
-our $VERSION = '0.007';
+our $VERSION = '0.007_01';
 
 my $rdln = Term::ReadLine->new ('Solve Sudoku and other set-allocation puzzles');
 my $OUT = $rdln->OUT || \*STDOUT;
@@ -78,12 +77,12 @@ while (1) {
 Warning - Verb '$verb' is not recognized. Enter 'help' for help.
 eod
 	    }
-	  elsif (can (__PACKAGE__, $verb)) {
+	  elsif (__PACKAGE__->can($verb)) {
 	    no strict qw{refs};
 	    &$verb (@args);
 	    use strict qw{refs};
 	    }
-	  elsif (can ($su, $verb)) {
+	  elsif (eval {$su->can($verb)}) {
 	    my $rslt = $su->$verb (@args);
 	    print "$rslt\n" if defined $rslt && !ref $rslt;
 	    }
