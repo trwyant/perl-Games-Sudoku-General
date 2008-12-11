@@ -1,4 +1,7 @@
-our $VERSION = '0.001';
+use strict;
+use warnings;
+
+our $VERSION = '0.001_01';
 
 use t::TestDriver;
 
