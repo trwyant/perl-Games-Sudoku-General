@@ -585,7 +585,7 @@ use warnings;
 
 use base qw{Exporter};
 
-our $VERSION = '0.010';
+our $VERSION = '0.010_01';
 our @EXPORT_OK = qw{
 	SUDOKU_SUCCESS
 	SUDOKU_NO_SOLUTION
@@ -754,7 +754,7 @@ no warnings qw{exec};
 use warnings qw{exec};
 $? ? undef : sub {
     my $hdl;
-    open ($hdl, "|$code") or croak <<eod;
+    open ($hdl, '|-', $code) or croak <<eod;
 Error - failed to open output handle to $code.
         $!
 eod
@@ -772,7 +772,7 @@ _copier_external (xclip => 'xclip -o');
 }
 
 sub _copier_win32 {
-eval "use Win32::Clipboard";
+eval {require Win32::Clipboard};
 $@ ? undef : sub {
     (my $s = join '', @_) =~ s/\n/\r\n/mg;
     Win32::Clipboard->new ()->Set ($s);
@@ -1087,7 +1087,7 @@ no warnings qw{exec};
 use warnings qw{exec};
 $? ? undef : sub {
     my $hdl;
-    open ($hdl, "$code|") or croak <<eod;
+    open ($hdl, '-|', $code) or croak <<eod;
 Error - failed to open input handle from $code.
         $!
 eod
@@ -1105,7 +1105,7 @@ _copier_external ('xclip -o' => 'xclip -o');
 }
 
 sub _paster_win32 {
-eval "use Win32::Clipboard";
+eval {require Win32::Clipboard};
 $@ ? undef : sub {
     Win32::Clipboard->new ()->Get ();
     }
@@ -1779,8 +1779,8 @@ sub _constrain {
 my $self = shift;
 my $stack = $self->{backtrack_stack} ||= [];	# May hit this when initializing.
 my $used = $self->{constraints_used} ||= {};
-##my $syms = @{$self->{symbol_list}};
-my $iterations = $self->{iteration_limit}
+my $iterations;
+$iterations = $self->{iteration_limit}
     if $self->{iteration_limit} > 0;
 
 $self->{no_more_solutions} and
@@ -1830,7 +1830,7 @@ eod
     }	# end outer constraint loop.
 
 $self->set (status_value => SUDOKU_TOO_HARD);
-return undef;
+return;
 }
 
 #	Constraint executors:
@@ -2420,7 +2420,7 @@ $rslt;
 sub _unload {
 my $self = shift;
 my $prefix = shift || '';
-@_ and do {$self->set (status_value => $_[0]); $_[0] and return undef};
+@_ and do {$self->set (status_value => $_[0]); $_[0] and return};
 my $rslt = '';
 my $col = $self->{columns};
 my $row = $self->{rows} ||= floor (@{$self->{cell}} / $col);
