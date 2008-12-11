@@ -26,7 +26,7 @@ where the only valid option at the moment is
 
 eod
 
-our $VERSION = '0.007_01';
+our $VERSION = '0.007_02';
 
 my $rdln = Term::ReadLine->new ('Solve Sudoku and other set-allocation puzzles');
 my $OUT = $rdln->OUT || \*STDOUT;
@@ -77,10 +77,8 @@ while (1) {
 Warning - Verb '$verb' is not recognized. Enter 'help' for help.
 eod
 	    }
-	  elsif (__PACKAGE__->can($verb)) {
-	    no strict qw{refs};
-	    &$verb (@args);
-	    use strict qw{refs};
+	  elsif (my $code = __PACKAGE__->can($verb)) {
+	    $code->(@args);
 	    }
 	  elsif (eval {$su->can($verb)}) {
 	    my $rslt = $su->$verb (@args);
@@ -181,7 +179,11 @@ unshift @handles, $fh;
 
 sub _acquire_line {
 my $prompt = shift || 'sudokug> ';
-my $rslt = @handles ? $handles[0]->getline() : -t STDIN ? $rdln->readline ($prompt) : <STDIN>;
+# We do not use *ARGV for input, and want to prompt even if
+# output is to a pipe, so we disable Perl::Critic's assertion
+# that we should be using IO::Interactive::is_interactive here.
+my $rslt = @handles ? $handles[0]->getline() :
+    -t STDIN ? $rdln->readline ($prompt) : <STDIN>;	## no critic
 defined $rslt and chomp $rslt;
 $rslt;
 }
