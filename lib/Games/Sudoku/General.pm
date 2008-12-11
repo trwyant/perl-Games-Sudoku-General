@@ -585,7 +585,7 @@ use warnings;
 
 use base qw{Exporter};
 
-our $VERSION = '0.010_01';
+our $VERSION = '0.010_02';
 our @EXPORT_OK = qw{
 	SUDOKU_SUCCESS
 	SUDOKU_NO_SOLUTION
@@ -954,6 +954,7 @@ return;
 
 my %accessor = (
     allowed_symbols => \&_get_allowed_symbols,
+    autocopy => \&_get_value,
     columns => \&_get_value,
     debug => \&_get_value,
     generation_limit => \&_get_value,
