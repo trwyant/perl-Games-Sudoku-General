@@ -11,10 +11,12 @@ CVS/
 ^pm_to_blib$
 ^pod2htm
 ^bug
-^t/manifest.t$
-^t/pod_spelling.t$
-^t/sudoku_dion.t$
-^t/sudoku_quincunx.t$
+^t/critic\.t$
+^t/executable\.t$
+^t/manifest\.t$
+^t/pod_spelling\.t$
+^t/sudoku_dion\.t$
+^t/sudoku_quincunx\.t$
 \.swp$
 \.tar\.gz$
 ^TODO$
