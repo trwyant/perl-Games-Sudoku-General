@@ -1,3 +1,5 @@
+package main;
+
 use strict;
 use warnings;
 
@@ -10,48 +12,47 @@ BEGIN {
     Test::Spelling->import();
 }
 
-our $VERSION = '0.003_01';
-
 add_stopwords (<DATA>);
 
 all_pod_files_spelling_ok ();
+
+1;
 __DATA__
-autocopy
-cell's
 CPSearch
-cubical
-darwin
 Fowler's
 Guine
 Ishigaki
 Kenichi
 Kulesha
-latin
-lib
 Lite
-Mhz
-min
-MacOS
 MSWin
+Mhz
 O'Neill
 OO
-pbcopy
-pbpaste
 Pegg
-quads
-quincunx
-samurai
-square's
+Quincunx
+Samurai
 Sudoku
-sudoku
-sudokug
 SudokuTk
-sudokux
 TkPlayer
-trove
 Wasabi
-webcmd
 Wyant
 Wyllie
-xclip
 YASudoku
+autocopy
+cubical
+darwin
+latin
+lib
+min
+pbcopy
+pbpaste
+quads
+quincunx
+square's
+sudoku
+sudokug
+sudokux
+trove
+xclip
+webcmd

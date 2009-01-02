@@ -1,12 +1,15 @@
+package main;
+
 use strict;
 use warnings;
 
-our $VERSION = '0.001_01';
+our $VERSION = '0.001_02';
 
 use t::TestDriver;
 
 t::TestDriver->execute (*DATA);
 
+1;
 __END__
 
 set quincunx 3

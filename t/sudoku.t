@@ -1,12 +1,15 @@
+package main;
+
 use strict;
 use warnings;
 
 use t::TestDriver;
 
-our $VERSION = '0.001_01';
+our $VERSION = '0.001_02';
 
 t::TestDriver->execute (*DATA);
 
+1;
 __END__
 
 get columns

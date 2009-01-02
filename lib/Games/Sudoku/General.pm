@@ -576,16 +576,16 @@ This package provides the following public methods:
 
 =cut
 
-use 5.006;	# For 'our', at least.
-
 package Games::Sudoku::General;
+
+use 5.006;	# For 'our', at least.
 
 use strict;
 use warnings;
 
 use base qw{Exporter};
 
-our $VERSION = '0.010_03';
+our $VERSION = '0.010_04';
 our @EXPORT_OK = qw{
     SUDOKU_SUCCESS
     SUDOKU_NO_SOLUTION
@@ -636,14 +636,15 @@ The newly-instantiated object is returned.
 =cut
 
 sub new {
-    my $class = shift;
+    my ($class, @args) = @_;
+    ref $class and $class = ref $class;
     my $self = bless {
 	debug => 0,
 	generation_limit => 30,
 	iteration_limit => 0,
 	output_delimiter => ' ',
     }, $class;
-    @_ and $self->set (@_);
+    @args and $self->set (@args);
     $self->{cell} or $self->set (sudoku => 3);
     $self->{symbol_list}
 	or $self->set (symbols => join ' ', '.', 1 .. $self->{largest_set});
@@ -666,15 +667,16 @@ modify an existing set with this method, nor can you add new cells.
 =cut
 
 sub add_set {
-    my $self = shift;
-    my $name = shift;
+    my ($self, $name, @cells) = @_;
     $self->{set}{$name} and croak <<eod;
 Error - Set '$name' already exists.
 eod
-    foreach my $inx (@_) {$self->{cell}[$inx] or croak <<eod}
+    foreach my $inx (@cells) {
+	$self->{cell}[$inx] or croak <<eod
 Error - Cell $inx does not exist.
 eod
-    foreach my $inx (@_) {
+    }
+    foreach my $inx (@cells) {
 	my $cell = $self->{cell}[$inx];
 	@{$cell->{membership}} or --$self->{cells_unused};
 	foreach my $other (@{$cell->{membership}}) {
@@ -686,7 +688,7 @@ eod
     }
     $self->{set}{$name} = {
 	name => $name,
-	membership => [sort @_],
+	membership => [sort @cells],
     };
     $self->{largest_set} = max ($self->{largest_set},
 	scalar @{$self->{set}{$name}{membership}});
@@ -763,9 +765,7 @@ eod
 
 sub _copier_external {
     my ($code, $probe) = @_;
-    no warnings qw{exec};
-    `$probe`;
-    use warnings qw{exec};
+    my $junk = `$probe`;	# Don't care what it returns.
     return $? ? undef : sub {
 	my $hdl;
 	open ($hdl, '|-', $code) or croak <<eod;
@@ -773,6 +773,7 @@ Error - failed to open output handle to $code.
         $!
 eod
 	print $hdl @_;
+	close $hdl;
 	return '';
     }
 }
@@ -934,7 +935,7 @@ eod
     $size = @{$self->{cell}};	# Note equivocation on $size.
     local $Data::Dumper::Terse = 1;
     my @universe = $self->{cells_unused} ?
-	grep @{$self->{cell}[$_]{membership}}, (0 .. @{$self->{cell}} - 1) :
+	grep {@{$self->{cell}[$_]{membership}}} (0 .. @{$self->{cell}} - 1) :
 	(0 .. @{$self->{cell}} - 1);
     while (--$tries >= 0) {
 	$self->problem ();	# We rely on this specifying an empty problem.
@@ -999,10 +1000,10 @@ attribute names after the first are ignored.
 =cut
 
 sub get {
-    my $self = shift;
+    my ($self, @args) = @_;
     my @rslt;
-    wantarray or @_ = ($_[0]);
-    foreach my $name (@_) {
+    wantarray or @args = ($args[0]);
+    foreach my $name (@args) {
 	exists $accessor{$name} or croak <<eod;
 Error - Attribute $name does not exist, or is write-only.
 eod
@@ -1095,6 +1096,7 @@ Error - Paste from clipboard unavailable. The xclip program has not been
 eod
 	$self->problem ($paster->());
 	$self->_unload ();
+	return $self;
     }
 
 
@@ -1102,9 +1104,7 @@ eod
 
 sub _paster_external {
     my ($code, $probe) = @_;
-    no warnings qw{exec};
-    `$probe`;
-    use warnings qw{exec};
+    my $junk = `$probe`;	# Not interested in what probe returns.
     return $? ? undef : sub {
 	my $hdl;
 	open ($hdl, '-|', $code) or croak <<eod;
@@ -1112,7 +1112,9 @@ Error - failed to open input handle from $code.
         $!
 eod
 	local $/ = undef;
-	<$hdl>;
+	my $buffer = <$hdl>;
+	close $hdl;
+	return $buffer;
     }
 }
 
@@ -1201,7 +1203,7 @@ Error - Too many cell specifications. The topology allows only $max.
 eod
 	next unless defined $_;
 	# was $self->{ignore_unused}
-	$self->{cells_unused} && !@{$self->{cell}[$inx]{membership}}
+	($self->{cells_unused} && !@{$self->{cell}[$inx]{membership}})
 	    and do {$inx++; redo};
 	$self->{allowed_symbols}{$_} and do {
 	    $self->{debug} > 1 and print <<eod;
@@ -1217,7 +1219,8 @@ eod
 	    }
 	};
 	defined $hash->{$_} or $_ = $self->{symbol_list}[0];
-	@{$self->{cell}[$inx]{membership}} || $_ eq $self->{symbol_list}[0]
+	(@{$self->{cell}[$inx]{membership}} ||
+	    $_ eq $self->{symbol_list}[0])
 	    or croak <<eod;
 Error - Cell $inx is unused, and must be specified as empty.
 eod
@@ -1318,9 +1321,8 @@ eod
 }
 
 sub _set_allowed_symbols {
-    my $self = shift;
-    my $name = shift;
-    my $value = shift || '';
+    my ($self, $name, $value) = @_;
+    defined $value or $value = '';
     my $maxlen = 0;
     $self->{debug} and print <<eod;
 Debug allowed_symbols being set to '$value'
@@ -1357,11 +1359,10 @@ eod
 }
 
 sub _set_brick {
-    my $self = shift;
-    my $name = shift;
-    my ($horiz, $vert, $size) = ref $_[0] ? @{$_[0]} : split ',', $_[0];
+    my ($self, $name, $value) = @_;
+    my ($horiz, $vert, $size) = ref $value ? @$value : split ',', $value;
     $size ||= $horiz * $vert;
-    $size % $horiz || $size % $vert and croak <<eod;
+    ($size % $horiz || $size % $vert) and croak <<eod;
 Error - The puzzle size $size must be a multiple of both the horizontal
         brick size $horiz and the vertical brick size $vert.
 eod
@@ -1382,9 +1383,7 @@ eod
 }
 
 sub _set_corresponding {
-    my $self = shift;
-    my $name = shift;
-    my $order = shift;
+    my ($self, $name, $order) = @_;
     my $size = $order * $order;
     $self->set (sudoku => $order);
     my $order_minus_1 = $order - 1;
@@ -1442,9 +1441,7 @@ eod
 );
 
 sub _set_cube {
-    my $self = shift;
-    my $name = shift;
-    my $type = shift;
+    my ($self, $name, $type) = @_;
     if ($type =~ m/\D/) {
 	$cube{$type} or croak <<eod;
 Error - Cube type '$type' is not defined. Legal values are numeric (for
@@ -1478,9 +1475,7 @@ sub _cube_set_names {
 }
 
 sub _set_latin {
-    my $self = shift;
-    my $name = shift;
-    my $size = shift;
+    my ($self, $name, $size) = @_;
     my $syms = '.';
     my $topo = '';
     my $letter = 'A';
@@ -1497,9 +1492,8 @@ sub _set_latin {
 }
 
 sub _set_null {
-    my $self = shift;
-    my $name = shift;
-    my ($size, $columns, $rows) = ref $_[0] ? @{$_[0]} : split ',', $_[0];
+    my ($self, $name, $value) = @_;
+    my ($size, $columns, $rows) = ref $value ? @$value : split ',', $value;
     $self->{cell} = [];		# The cells themselves.
     $self->{set} = {};		# The sets themselves.
     $self->{largest_set} = 0;
@@ -1516,9 +1510,7 @@ sub _set_null {
 }
 
 sub _set_number {
-    my $self = shift;
-    my $name = shift;
-    my $value = shift;
+    my ($self, $name, $value) = @_;
     _looks_like_number ($value) or croak <<eod;
 Error - Attribute $name must be numeric.
 eod
@@ -1527,9 +1519,8 @@ eod
 }
 
 sub _set_quincunx {
-    my $self = shift;
-    my $name = shift;
-    my ($order, $gap) = ref $_[0] ? @{$_[0]} : split ',', $_[0];
+    my ($self, $name, $value) = @_;
+    my ($order, $gap) = ref $value ? @$value : split ',', $value;
     $order =~ m/\D/ and croak <<eod;
 Error - The quincunx order must be an integer.
 eod
@@ -1562,9 +1553,9 @@ eod
 	)
     };
     my $limit = $osq - 1;
-    my @colinx = map $_ * $cols, 0 .. $limit;
-    my @sqinx = map $_ .. $_ + $order - 1, map $_ * $cols, 0 .. $order - 1;
-    my @sqloc = map $_ * $order, @sqinx;
+    my @colinx = map {$_ * $cols} 0 .. $limit;
+    my @sqinx = map {$_ .. $_ + $order - 1} map {$_ * $cols} 0 .. $order - 1;
+    my @sqloc = map {$_ * $order} @sqinx;
     my @sqgened;	# 's' sets generated, by origin cell.
     # Crete the row, column, and square sets. These have the same names
     # as those created by the corresponding 'sudoku' topology, but with
@@ -1580,11 +1571,11 @@ eod
 	    my $offset = $inx * $cols;
 	    my $o1 = $offset + $sqr;
 	    $self->add_set("g${grid}r$inx" => $o1 .. $o1 + $limit);
-	    $self->add_set("g${grid}c$inx" => map $_ + $inx + $sqr,
+	    $self->add_set("g${grid}c$inx" => map {$_ + $inx + $sqr}
 		@colinx);
 	    $o1 = $sqloc[$inx] + $sqr;
 	    $sqgened[$o1]++
-		or $self->add_set("g${grid}s$inx" => map $_ + $o1,
+		or $self->add_set("g${grid}s$inx" => map {$_ + $o1}
 		@sqinx);
 	}
     }
@@ -1598,7 +1589,7 @@ sub _set_status_value {
     _looks_like_number ($value) or croak <<eod;
 Error - Attribute $name must be numeric.
 eod
-    $value < 0 || $value >= @status_values and croak <<eod;
+    ($value < 0 || $value >= @status_values) and croak <<eod;
 Error - Attribute $name must be greater than or equal to 0 and
         less than @{[scalar @status_values]}
 eod
@@ -1656,18 +1647,17 @@ eod
 }
 
 sub _set_topology {
-    my $self = shift;
-    my $name = shift;
+    my ($self, $name, @args) = @_;
     $self->{cell} = [];		# The cells themselves.
     $self->{set} = {};		# The sets themselves.
     $self->{largest_set} = 0;
     $self->{intersection} = {};
     $self->{cells_unused} = 0;
     my $cell_inx = 0;
-    foreach my $cell_def (map {split '\s+', $_} @_) {
+    foreach my $cell_def (map {split '\s+', $_} @args) {
 	my $cell = {membership => [], index => $cell_inx};
 	push @{$self->{cell}}, $cell;
-	foreach my $name (sort grep $_ ne '', split ',', $cell_def) {
+	foreach my $name (sort grep {$_ ne ''} split ',', $cell_def) {
 	    foreach my $other (@{$cell->{membership}}) {
 		my $int = "$other,$name";
 		$self->{intersection}{$int} ||= [];
@@ -2081,8 +2071,8 @@ sub _constraint_T {
 	    next unless $tuple[$inx];
 	    my $max = $inx - 1;
 	    $tuple[$inx] = [map {my @tpl = @$_;
-		map {[@tpl, $_]} $tpl[$#tpl] + 1 .. $max}
-		grep {$_->[@$_ - 1] < $max} @{$tuple[$inx]}];
+		map {[@tpl, $_]} $tpl[-1] + 1 .. $max}
+		grep {$_->[-1] < $max} @{$tuple[$inx]}];
 	    $tuple[$inx] = undef unless @{$tuple[$inx]};
 	}
 
@@ -2260,12 +2250,12 @@ sub _constraint_remove {
     my $used = $self->{constraints_used} ||= {};
     my $inx = @$stack;
     my $syms = @{$self->{symbol_list}};
-    $self->{debug} && $inx and print <<eod;
+    ($self->{debug} && $inx) and print <<eod;
 # Debug - Backtracking
 eod
     my $old = $inx;
     while (--$inx >= 0) {
-	$min && $self->{cells_unassigned} >= $min and do {
+	($min && $self->{cells_unassigned} >= $min) and do {
 	    $self->{debug} and print <<eod;
 Debug - Hit minimum occupied cells - returning.
 eod
@@ -2273,9 +2263,9 @@ eod
 	};
 	my $constraint = $stack->[$inx][0];
 	if ($removal_ok) {
-	    $max && $self->{cells_unassigned} <= $max &&
-##	    && !$removal_ok->{$constraint} and next;
-		!exists $removal_ok->{$constraint} and next;
+	    ($max && $self->{cells_unassigned} <= $max &&
+##		!$removal_ok->{$constraint} and next;
+		!exists $removal_ok->{$constraint}) and next;
 
 	    if (!exists $removal_ok->{$constraint}) {
 		$self->{debug} and print <<eod;
@@ -2290,7 +2280,8 @@ eod
 		return SUDOKU_SUCCESS;
 	    }
 	} else {
-	    $max && $self->{cells_unassigned} <= $max && $constraint eq '?'
+	    ($max && $self->{cells_unassigned} <= $max &&
+		$constraint eq '?')
 		and next;
 	}
 	--$used->{$constraint};
@@ -2349,9 +2340,9 @@ eod
 #	_format_constraint formats the given constraint for output.
 
 sub _format_constraint {
-    my $self = shift;
+    my ($self, @args) = @_;
     my @steps;
-    foreach (@_) {
+    foreach (@args) {
 	my @stuff;
 	foreach (@$_) {
 	    last unless $_;
@@ -2377,7 +2368,7 @@ sub _format_constraint {
 
 sub _looks_like_number {
     local $_ = shift;
-    return 0 if !defined ($_) or ref ($_);
+    return 0 if !defined ($_) || ref ($_);
     return 1 if m/^[+-]?\d+$/;
     return 0;
 }
@@ -2446,9 +2437,12 @@ sub _try {
 #	the current cell contents are ignored.
 
 sub _unload {
-    my $self = shift;
-    my $prefix = shift || '';
-    @_ and do {$self->set (status_value => $_[0]); $_[0] and return};
+    my ($self, $prefix, @args) = @_;
+    defined $prefix or $prefix = '';
+    @args and do {
+	$self->set (status_value => $args[0]);
+	$args[0] and return;
+    };
     my $rslt = '';
     my $col = $self->{columns};
     my $row = $self->{rows} ||= floor (@{$self->{cell}} / $col);

@@ -1,9 +1,9 @@
+package main;
 
 use strict;
 use warnings;
 
 use Test;
-
 
 plan tests => 2;
 print <<eod;
@@ -20,3 +20,5 @@ print <<eod;
 # Test 2 - Instantiate a Games::Sudoku::General object.
 eod
 skip ($skip, $skip || Games::Sudoku::General->new ());
+
+1;
