@@ -5,7 +5,7 @@ use warnings;
 
 use t::TestDriver;
 
-our $VERSION = '0.001_02';
+our $VERSION = '0.001_03';
 
 t::TestDriver->execute (*DATA);
 
@@ -210,7 +210,7 @@ o=1,3,5,7,9
 e=8,6,4,2
 eod
 get allowed_symbols
-test <<eod
+test <<eod 'Check alowed symbols encoding for Even/Odd'
 e=2,4,6,8
 o=1,3,5,7,9
 eod
@@ -249,7 +249,7 @@ y=1,3,5,7,9
 g=2,4,6,8
 eod
 get allowed_symbols
-test <<eod
+test <<eod 'Check allowed symbols encoding for Colors'
 b=5,6,7,8,9
 g=2,4,6,8
 r=1,2,3,4
