@@ -17,6 +17,6 @@ CVS/
 ^t/pod_spelling\.t$
 ^t/sudoku_dion\.t$
 ^t/sudoku_quincunx\.t$
+^test_environment$
 \.swp$
-\.tar\.gz$
 ^TODO$
