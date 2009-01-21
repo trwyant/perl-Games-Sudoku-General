@@ -26,7 +26,7 @@ where the only valid option at the moment is
 
 eod
 
-our $VERSION = '0.007_02';
+our $VERSION = '0.007_03';
 
 my $rdln = Term::ReadLine->new ('Solve Sudoku and other set-allocation puzzles');
 my $OUT = $rdln->OUT || \*STDOUT;
@@ -93,27 +93,14 @@ eod
     $@ and warn $@;
     }
 
-sub dump {
-use Data::Dumper;
-local $Data::Dumper::Terse = 1;
-print "Dump of the current Games::Sudoku::General object:\n", Dumper ($su);
+sub dump {	## no critic ProhibitBuiltInHomonyms
+    use Data::Dumper;
+    local $Data::Dumper::Terse = 1;
+    print "Dump of the current Games::Sudoku::General object:\n", Dumper ($su);
+    return;
 }
 
 sub get {
-
-=begin comment
-
-my @rslt = $su->get (@_);
-for (my $inx = 0; $inx < @_; $inx++) {
-    print $rslt[$inx] =~ m/\n/s ?
-	"$_[$inx]:\n$rslt[$inx]\n" :
-	"$_[$inx]: $rslt[$inx]\n\n";
-    }
-
-=end comment
-
-=cut
-
     foreach my $name (@_) {
 	local $_  = exists $parm{$name} ? $parm{$name} : $su->get($name);
 	if (!defined $_) {
@@ -124,22 +111,25 @@ for (my $inx = 0; $inx < @_; $inx++) {
 	    print "$name: $_\n\n";
 	}
     }
-
+    return;
 }
 
 sub help {
     if (my $cmd = $parm{webcmd}) {
-	system {$cmd} $cmd, 'http://search.cpan.org/dist/Games-Sudoku-General/';
+	system {$cmd} $cmd,
+	    'http://search.cpan.org/dist/Games-Sudoku-General/';
     } else {
-    my $os_specific = "_help_$^O";
-    __PACKAGE__->can ($os_specific) ? __PACKAGE__->$os_specific :
-    pod2usage (-verbose => 2, -exitval => 'NOEXIT',
-	$_[0] && $_[0] eq 'lib' ? (-input => $INC{'Games/Sudoku/General.pm'}) : ());
+	my $os_specific = "_help_$^O";
+	__PACKAGE__->can ($os_specific) ? __PACKAGE__->$os_specific :
+	    pod2usage (-verbose => 2, -exitval => 'NOEXIT',
+		($_[0] && $_[0] eq 'lib') ? (
+		    -input => $INC{'Games/Sudoku/General.pm'}) : ());
     }
+    return;
 }
 
 sub _help_MacOS {
-print <<eod;
+    print <<eod;
 
 Normally, we would display the documentation for the sudokug
 script here. But unfortunately this depends on the ability to
@@ -149,6 +139,7 @@ http://search.cpan.org/~wyant/Games-Sudoku-General-@{[
     Games::Sudoku::General->VERSION]}/bin/sudokug
 
 eod
+    return;
 }
 
 sub set {
@@ -160,43 +151,47 @@ sub set {
 	    $su->set ($name, shift);
 	}
     }
+    return;
 }
 
 sub solution {
-my $rslt = $su->solution () || ($su->get ('status_text'));
-chomp $rslt;
-print "$rslt\n";
+    my $rslt = $su->solution () || ($su->get ('status_text'));
+    chomp $rslt;
+    print "$rslt\n";
+    return;
 }
 
 sub source {
-my $fn = shift;
-my $fh = FileHandle->new ("<$fn") or die <<eod;
+    my $fn = shift;
+    my $fh = FileHandle->new ("<$fn") or die <<eod;
 Error - Failed to open input file $fn.
         $!
 eod
-unshift @handles, $fh;
+    return unshift @handles, $fh;
 }
 
 sub _acquire_line {
-my $prompt = shift || 'sudokug> ';
-# We do not use *ARGV for input, and want to prompt even if
-# output is to a pipe, so we disable Perl::Critic's assertion
-# that we should be using IO::Interactive::is_interactive here.
-my $rslt = @handles ? $handles[0]->getline() :
-    -t STDIN ? $rdln->readline ($prompt) : <STDIN>;	## no critic
-defined $rslt and chomp $rslt;
-$rslt;
+    my $prompt = shift || 'sudokug> ';
+    # We do not use *ARGV for input, and want to prompt even if
+    # output is to a pipe, so we disable Perl::Critic's assertion
+    # that we should be using IO::Interactive::is_interactive here.
+    my $rslt = @handles ? $handles[0]->getline() :
+	-t STDIN ?	## no critic ProhibitInteractiveTest
+	    $rdln->readline ($prompt) :
+	    <STDIN>;
+    defined $rslt and chomp $rslt;
+    return $rslt;
 }
 
 sub _here_document {
-my $tag = shift;
-my $rslt = '';
-while (defined (my $data = _acquire_line ("$tag: "))) {
-    last if $data eq $tag;
-    $rslt .= $data;
-    $rslt .= "\n";
+    my $tag = shift;
+    my $rslt = '';
+    while (defined (my $data = _acquire_line ("$tag: "))) {
+	last if $data eq $tag;
+	$rslt .= $data;
+	$rslt .= "\n";
     }
-$rslt;
+    return $rslt;
 }
 
 __END__
