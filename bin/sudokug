@@ -26,7 +26,7 @@ where the only valid option at the moment is
 
 eod
 
-our $VERSION = '0.007_03';
+our $VERSION = '0.007_04';
 
 my $rdln = Term::ReadLine->new ('Solve Sudoku and other set-allocation puzzles');
 my $OUT = $rdln->OUT || \*STDOUT;
@@ -93,7 +93,7 @@ eod
     $@ and warn $@;
     }
 
-sub dump {	## no critic ProhibitBuiltInHomonyms
+sub dump {	## no critic (ProhibitBuiltInHomonyms)
     use Data::Dumper;
     local $Data::Dumper::Terse = 1;
     print "Dump of the current Games::Sudoku::General object:\n", Dumper ($su);
@@ -172,11 +172,8 @@ eod
 
 sub _acquire_line {
     my $prompt = shift || 'sudokug> ';
-    # We do not use *ARGV for input, and want to prompt even if
-    # output is to a pipe, so we disable Perl::Critic's assertion
-    # that we should be using IO::Interactive::is_interactive here.
     my $rslt = @handles ? $handles[0]->getline() :
-	-t STDIN ?	## no critic ProhibitInteractiveTest
+	-t STDIN ?
 	    $rdln->readline ($prompt) :
 	    <STDIN>;
     defined $rslt and chomp $rslt;
