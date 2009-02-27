@@ -26,7 +26,7 @@ where the only valid option at the moment is
 
 eod
 
-our $VERSION = '0.007_04';
+our $VERSION = '0.007_05';
 
 my $rdln = Term::ReadLine->new ('Solve Sudoku and other set-allocation puzzles');
 my $OUT = $rdln->OUT || \*STDOUT;
@@ -69,7 +69,7 @@ while (1) {
     my @args = parse_line ('\s+', 0, $_);
     my $verb = lc shift @args;
     $verb = $synonym{$verb} if $synonym{$verb};
-    @args = map {m/^<<(.+)/ ? _here_document ($1) : $_} @args;
+    @args = map {m/^<<(.+)/ ? _here_document ($1 . '') : $_} @args;
     last if $verb eq 'exit';
     eval {
 	if ($verb =~ m/\W/ || $verb =~ m/^_/ || $verb eq 'new') {
