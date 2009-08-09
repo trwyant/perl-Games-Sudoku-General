@@ -7,19 +7,30 @@ use Config;
 use FileHandle;
 use Module::Build;
 
+(my $mbv = Module::Build->VERSION) =~ s/_//g;
+
+my %attr = (
+    dist_author => 'Tom Wyant (wyant at cpan dot org)',
+    dist_abstract => 'Solve Sudoku and related puzzles',
+    module_name => 'Games::Sudoku::General',
+    requires => {},
+    get_options => {y => {}, n => {}},
+    dynamic_config => 1,
+    license => 'perl',
+);
+
+$mbv >= 0.28 and $attr{meta_merge} = {
+    no_index => {
+	directory => [qw{inc t}],
+    },
+    resources => {
+	bugtracker => 'https://rt.cpan.org/Public/Dist/Display.html?Name=Games-Sudoku-General',
+    },
+};
+
 #	Generate a builder object.
 
-my $bldr = Module::Build->new (
-	dist_author => 'Tom Wyant (wyant at cpan dot org)',
-	dist_abstract => 'Solve Sudoku and related puzzles',
-	module_name => 'Games::Sudoku::General',
-	requires => {},
-##	dist_name => 'Games-Sudoku-General',
-##	dist_version_from => 'lib/Games/Sudoku/General.pm',
-	get_options => {y => {}, n => {}},
-	dynamic_config => 1,
-	license => 'perl',
-	);
+my $bldr = Module::Build->new (%attr);
 
 #	Find out what the user wants to do.
 

@@ -7,7 +7,7 @@ use ExtUtils::MakeMaker qw{WriteMakefile prompt};
 use FileHandle;
 use Getopt::Std;
 
-our $VERSION = '0.003';
+our $VERSION = '0.003_01';
 
 my %opt;
 getopts ('n', \%opt) or die <<eod;
@@ -77,22 +77,30 @@ eod
 my $vers = '';
 
 (my $mmv = ExtUtils::MakeMaker->VERSION) =~ s/_//g;
-WriteMakefile (
-##	(MM->can ('signature_target') ? (SIGN => 1) : ()),
-	NAME => 'Games::Sudoku::General',
-	VERSION_FROM => 'lib/Games/Sudoku/General.pm',
-	PREREQ_PM => {
-			},
-	PL_FILES => {},	# Prevent old MakeMaker from running Build.PL
-	EXE_FILES => \@exe_files,
-#	'linkext' => {LINKTYPE => ''},
-	'dist' => {COMPRESS => 'gzip', SUFFIX => 'gz'},
-	realclean => {FILES => join ' ', @clean_files},
-	$] >= 5.005 ? (
-		AUTHOR => 'Tom Wyant (wyant at cpan dot org)',
-		ABSTRACT => 'Solve Sudoku and related puzzles',
-		BINARY_LOCATION => "$Config{archname}$vers/Games-Sudoku-General.tar.gz",
-		($mmv >= 6.31 ?
-		    (LICENSE => 'perl') : ())
-		) : (),
-	);
+my %attr = (
+##  (MM->can ('signature_target') ? (SIGN => 1) : ()),
+    NAME => 'Games::Sudoku::General',
+    VERSION_FROM => 'lib/Games/Sudoku/General.pm',
+    PREREQ_PM => {
+		    },
+    PL_FILES => {},	# Prevent old MakeMaker from running Build.PL
+    EXE_FILES => \@exe_files,
+#   'linkext' => {LINKTYPE => ''},
+    'dist' => {COMPRESS => 'gzip', SUFFIX => 'gz'},
+    realclean => {FILES => join ' ', @clean_files},
+    AUTHOR => 'Tom Wyant (wyant at cpan dot org)',
+    ABSTRACT => 'Solve Sudoku and related puzzles',
+    BINARY_LOCATION => "$Config{archname}$vers/Games-Sudoku-General.tar.gz",
+);
+
+
+$mmv >= 6.31 and $attr{LICENSE} = 'perl';
+
+$mmv >= 6.4501 and $attr{META_MERGE} = {
+    resources => {
+	bugtracker => 'https://rt.cpan.org/Public/Dist/Display.html?Name=Games-Sudoku-General',
+	license => 'http://dev.perl.org/licenses/',
+    },
+};
+
+WriteMakefile(%attr);
