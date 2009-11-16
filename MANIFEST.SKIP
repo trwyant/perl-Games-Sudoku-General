@@ -8,9 +8,11 @@ CVS/
 ^Games-Sudoku-General
 ^Makefile$
 ^MANIFEST\.
+^meta/
 ^pm_to_blib$
 ^pod2htm
 ^bug
+^ref/
 ^t/critic\.t$
 ^t/executable\.t$
 ^t/manifest\.t$
@@ -18,6 +20,6 @@ CVS/
 ^t/pod_spelling\.t$
 ^t/sudoku_dion\.t$
 ^t/sudoku_quincunx\.t$
-^test_environment$
+\.svn/
 \.swp$
 ^TODO$
