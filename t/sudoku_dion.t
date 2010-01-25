@@ -5,9 +5,9 @@ use warnings;
 
 our $VERSION = '0.001_02';
 
-use t::TestDriver;
+use Games::Sudoku::General::TestDriver;
 
-t::TestDriver->execute (*DATA);
+Games::Sudoku::General::TestDriver->execute (*DATA);
 
 1;
 __END__

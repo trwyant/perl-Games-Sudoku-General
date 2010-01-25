@@ -14,11 +14,6 @@ CVS/
 ^pod2htm
 ^bug
 ^ref/
-^t/critic\.t$
-^t/executable\.t$
-^t/manifest\.t$
-^t/perlcriticrc$
-^t/pod_spelling\.t$
 ^t/sudoku_dion\.t$
 ^t/sudoku_quincunx\.t$
 \.svn/

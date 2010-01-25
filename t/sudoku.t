@@ -3,11 +3,11 @@ package main;
 use strict;
 use warnings;
 
-use t::TestDriver;
+use Games::Sudoku::General::TestDriver;
 
 our $VERSION = '0.001_03';
 
-t::TestDriver->execute (*DATA);
+Games::Sudoku::General::TestDriver->execute (*DATA);
 
 1;
 __END__

@@ -1,4 +1,4 @@
-package t::TestDriver;
+package Games::Sudoku::General::TestDriver;
 
 use strict;
 use warnings;
