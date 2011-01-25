@@ -106,7 +106,6 @@ eod
     }
 
 ##my $vers = $] >= 5.008 ? '-5.8' : '';
-my $vers = '';
 
 #	Tell Module::Build what we want to do.
 

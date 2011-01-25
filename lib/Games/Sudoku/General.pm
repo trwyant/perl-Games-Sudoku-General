@@ -765,7 +765,7 @@ eod
 
 sub _copier_external {
     my ($code, $probe) = @_;
-    my $junk = `$probe`;	# Don't care what it returns.
+    `$probe`;	# Don't care what it returns.
     return $? ? undef : sub {
 	my $hdl;
 	open ($hdl, '|-', $code) or croak <<eod;
@@ -1104,7 +1104,7 @@ eod
 
 sub _paster_external {
     my ($code, $probe) = @_;
-    my $junk = `$probe`;	# Not interested in what probe returns.
+    `$probe`;	# Not interested in what probe returns.
     return $? ? undef : sub {
 	my $hdl;
 	open ($hdl, '-|', $code) or croak <<eod;
