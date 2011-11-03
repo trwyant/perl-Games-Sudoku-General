@@ -89,8 +89,8 @@ eod
 Warning - Verb '$verb' is not recognized. Enter 'help' for help.
 eod
 	    }
-	};
-    $@ and warn $@;
+	1;
+	} or warn $@;
     }
 
 sub dump {	## no critic (ProhibitBuiltInHomonyms)

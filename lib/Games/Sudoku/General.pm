@@ -767,11 +767,8 @@ sub _copier_external {
     my ($code, $probe) = @_;
     `$probe`;	# Don't care what it returns.
     return $? ? undef : sub {
-	my $hdl;
-	open ($hdl, '|-', $code) or croak <<eod;
-Error - failed to open output handle to $code.
-        $!
-eod
+	open my $hdl, '|-', $code
+	    or croak "Error - failed to open output handle to $code: $!";
 	print $hdl @_;
 	close $hdl;
 	return '';
@@ -787,11 +784,14 @@ sub _copier_xclip {
 }
 
 sub _copier_win32 {
-    eval {require Win32::Clipboard};
-    return $@ ? undef : sub {
+    eval {
+	require Win32::Clipboard;
+	1;
+    } and return sub {
 	(my $s = join '', @_) =~ s/\n/\r\n/mg;
 	Win32::Clipboard->new ()->Set ($s);
-    }
+    };
+    return;
 }
 
 
@@ -1106,12 +1106,9 @@ sub _paster_external {
     my ($code, $probe) = @_;
     `$probe`;	# Not interested in what probe returns.
     return $? ? undef : sub {
-	my $hdl;
-	open ($hdl, '-|', $code) or croak <<eod;
-Error - failed to open input handle from $code.
-        $!
-eod
 	local $/ = undef;
+	open my $hdl, '-|', $code
+	    or croak "Error - failed to open input handle from $code: $!";
 	my $buffer = <$hdl>;
 	close $hdl;
 	return $buffer;
@@ -1127,10 +1124,11 @@ sub _paster_xclip {
 }
 
 sub _paster_win32 {
-    eval {require Win32::Clipboard};
-    return $@ ? undef : sub {
-	Win32::Clipboard->new ()->Get ();
-    }
+    eval {
+	require Win32::Clipboard;
+	1;
+    } and return sub { return Win32::Clipboard->new()->Get(); };
+    return;
 }
 
 

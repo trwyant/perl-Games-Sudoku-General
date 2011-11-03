@@ -10,8 +10,11 @@ print <<eod;
 #
 # Test 1 - Load Games::Sudoku::General;
 eod
-eval {require Games::Sudoku::General};
-my $skip = $@ ? 'Failed to load Games::Sudoku::General' : '';
+
+my $skip = eval {
+    require Games::Sudoku::General;
+    1;
+} ? '' : 'Failed to load Games::Sudoku::General';
 print $skip ? "# $skip\n" : "# Games::Sudoku::General loaded successfully.\n";
 ok (!$skip);
 
