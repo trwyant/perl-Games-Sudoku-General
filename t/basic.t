@@ -3,25 +3,14 @@ package main;
 use strict;
 use warnings;
 
-use Test;
+use Test::More 0.88;
 
-plan tests => 2;
-print <<eod;
-#
-# Test 1 - Load Games::Sudoku::General;
-eod
+require_ok 'Games::Sudoku::General'
+    or BAIL_OUT 'Can not continue: unable to load Games::Sudoku::General';
 
-my $skip = eval {
-    require Games::Sudoku::General;
-    1;
-} ? '' : 'Failed to load Games::Sudoku::General';
-print $skip ? "# $skip\n" : "# Games::Sudoku::General loaded successfully.\n";
-ok (!$skip);
+isa_ok Games::Sudoku::General->new(), 'Games::Sudoku::General'
+    or BAIL_OUT 'Can not continue: unable to instantiate Games::Sudoku::General';
 
-print <<eod;
-#
-# Test 2 - Instantiate a Games::Sudoku::General object.
-eod
-skip ($skip, $skip || Games::Sudoku::General->new ());
+done_testing;
 
 1;
