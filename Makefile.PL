@@ -2,12 +2,17 @@ use 5.006;	# For 'our', at the very least.
 use strict;
 use warnings;
 
+use lib qw{ inc };
+
 use Config;
 use ExtUtils::MakeMaker qw{WriteMakefile prompt};
 use FileHandle;
 use Getopt::Std;
+use My::Module::Meta;
 
 our $VERSION = '0.003_01';
+
+my $meta = My::Module::Meta->new();
 
 my %opt;
 getopts ('ny', \%opt) or die <<eod;
@@ -19,7 +24,7 @@ eod
 my @exe_files;
 my @clean_files;
 
-print <<eod;
+print <<'EOD';
 
 In addition to Games::Sudoku::General, you will get the following
 executable:
@@ -33,7 +38,7 @@ accordingly.
 If you do not want this executable installed, rerun this script
 with the -n qualifier.
 
-eod
+EOD
 
 if ($opt{n}) {
     print "Because you have asserted -n, the executable will not be installed.\n\n";
@@ -86,8 +91,7 @@ my %attr = (
 ##  (MM->can ('signature_target') ? (SIGN => 1) : ()),
     NAME => 'Games::Sudoku::General',
     VERSION_FROM => 'lib/Games/Sudoku/General.pm',
-    PREREQ_PM => {
-		    },
+    PREREQ_PM => $meta->requires(),
     PL_FILES => {},	# Prevent old MakeMaker from running Build.PL
     EXE_FILES => \@exe_files,
 #   'linkext' => {LINKTYPE => ''},
@@ -101,11 +105,25 @@ my %attr = (
 
 $mmv >= 6.31 and $attr{LICENSE} = 'perl';
 
-$mmv >= 6.4501 and $attr{META_MERGE} = {
-    resources => {
-	bugtracker => 'https://rt.cpan.org/Public/Dist/Display.html?Name=Games-Sudoku-General',
-	license => 'http://dev.perl.org/licenses/',
-    },
-};
+if ( $mmv >= 6.4501 ) {
+    $attr{META_ADD} = {
+	no_index => {
+	    directory => [ qw{ inc t xt } ],
+	},
+    };    
+    $attr{META_MERGE} = {
+	resources => {
+	    bugtracker => 'https://rt.cpan.org/Public/Dist/Display.html?Name=Games-Sudoku-General',
+	    license => 'http://dev.perl.org/licenses/',
+	},
+    };
+}
+
+$mmv >= 6.4701 and $attr{MIN_PERL_VERSION} = $meta->requires_perl();
+
+$mmv >= 6.5501
+    and $attr{BUILD_REQUIRES} = $meta->build_requires()
+    or $mmv >= 6.4501
+    and $attr{META_MERGE}{build_requires} = $meta->build_requires();
 
 WriteMakefile(%attr);

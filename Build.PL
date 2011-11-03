@@ -9,14 +9,21 @@ use base qw{ My::Module::Build };
 use Config;
 use FileHandle;
 use Module::Build;
+use My::Module::Meta;
 
 (my $mbv = Module::Build->VERSION) =~ s/_//g;
+
+my $meta = My::Module::Meta->new();
 
 my %attr = (
     dist_author => 'Tom Wyant (wyant at cpan dot org)',
     dist_abstract => 'Solve Sudoku and related puzzles',
     module_name => 'Games::Sudoku::General',
-    requires => {},
+    requires => $meta->requires(
+	perl	=> $meta->requires_perl(),
+    ),
+    build_requires	=> $meta->build_requires(),
+    configure_requires	=> {},	# Don't require Module::Build.
     get_options => {y => {}, n => {}},
     dynamic_config => 1,
     license => 'perl',
@@ -24,15 +31,18 @@ my %attr = (
 
 $mbv >= 0.28 and $attr{meta_merge} = {
     no_index => {
-	directory => [qw{inc t}],
+	directory => [qw{ inc t xt }],
     },
     resources => {
 	bugtracker => 'https://rt.cpan.org/Public/Dist/Display.html?Name=Games-Sudoku-General',
     },
 };
 
+# Don't require Module::Build if we're making a distribution, since the
+# the user may simply prefer ExtUtils::MakeMaker.
+
 $mbv >= 0.34
-    and $attr{auto_configure_requires} = 0;	# Don't require Module::Build
+    and $attr{auto_configure_requires} = !$meta->distribution();
 
 #	Generate a builder object.
 
@@ -46,7 +56,7 @@ my @exe_files;
 my @clean_files;
 
 my @possible_exes = ('sudokug');
-print <<eod;
+print <<'EOD';
 
 In addition to Games::Sudoku::General, you will get the following
 executable:
@@ -59,7 +69,7 @@ Unless you are running MSWin32 or VMS (which are special-cased),
 I will assume you're running some version of U*ix, and behave
 accordingly.
 
-eod
+EOD
 
 
 if ($opt{n}) {
