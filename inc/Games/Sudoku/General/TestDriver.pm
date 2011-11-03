@@ -6,8 +6,6 @@ use warnings;
 use Games::Sudoku::General;
 use Test;
 
-our $VERSION = '0.001_02';
-
 my $method;
 my $number;
 my $pass;

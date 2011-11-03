@@ -10,8 +10,6 @@ use FileHandle;
 use Getopt::Std;
 use My::Module::Meta;
 
-our $VERSION = '0.003_01';
-
 my $meta = My::Module::Meta->new();
 
 my %opt;

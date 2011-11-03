@@ -7,8 +7,6 @@ use lib qw{ inc };
 
 use Games::Sudoku::General::TestDriver;
 
-our $VERSION = '0.001_03';
-
 Games::Sudoku::General::TestDriver->execute (*DATA);
 
 1;
