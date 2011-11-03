@@ -5,6 +5,8 @@ use warnings;
 
 our $VERSION = '0.001_02';
 
+use lib qw{ inc };
+
 use Games::Sudoku::General::TestDriver;
 
 Games::Sudoku::General::TestDriver->execute (*DATA);

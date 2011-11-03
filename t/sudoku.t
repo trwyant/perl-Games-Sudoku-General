@@ -3,6 +3,8 @@ package main;
 use strict;
 use warnings;
 
+use lib qw{ inc };
+
 use Games::Sudoku::General::TestDriver;
 
 our $VERSION = '0.001_03';

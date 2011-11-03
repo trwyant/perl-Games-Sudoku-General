@@ -10,9 +10,10 @@ use Getopt::Std;
 our $VERSION = '0.003_01';
 
 my %opt;
-getopts ('n', \%opt) or die <<eod;
-The only legal option is
-  -n = answer all questions 'no'.
+getopts ('ny', \%opt) or die <<eod;
+The only legal options are
+  -n = answer all questions 'no';
+  -y = answer all questions 'yes'.
 eod
 
 my @exe_files;
@@ -36,6 +37,10 @@ eod
 
 if ($opt{n}) {
     print "Because you have asserted -n, the executable will not be installed.\n\n";
+    }
+  elsif ( $opt{y} ) {
+    push @exe_files, qw{ sudokug };
+    print "Because you have asserted -y, the executable will be installed.\n";
     }
   else {
     foreach (qw{sudokug}) {
