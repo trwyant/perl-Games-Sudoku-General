@@ -7,6 +7,8 @@ inc/My/Module/Build.pm
 inc/My/Module/Meta.pm
 lib/Games/Sudoku/General.pm
 Build.PL
+LICENSES/Artistic
+LICENSES/Copying
 Makefile.PL
 MANIFEST
 MANIFEST.SKIP
