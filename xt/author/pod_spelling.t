@@ -21,6 +21,7 @@ all_pod_files_spelling_ok ();
 1;
 __DATA__
 autocopy
+combinatorial
 CPSearch
 cubical
 darwin
@@ -34,6 +35,7 @@ Kenichi
 Kulesha
 latin
 lib
+Mehner
 merchantability
 Mhz
 min

@@ -2570,38 +2570,47 @@ provided a treasure trove of 'non-standard' Sudoku puzzles.
 
 =head1 SEE ALSO
 
-The Games-Sudoku package by Eugene Kulesha (see
+The C<Games-LogicPuzzle> package by Andy Adler (see
+L<http://search.cpan.org/dist/Games-LogicPuzzle/>) solves all sorts of
+combinatorial puzzles, by backtracking through the puzzle space and
+applying a user-supplied function to see whether it has a valid
+solution. The examples include a couple Sudoku puzzles.
+
+The C<Games-Sudoku> package by Eugene Kulesha (see
 L<http://search.cpan.org/dist/Games-Sudoku/>) solves the standard 9x9
 version of the puzzle.
 
-The Games-Sudoku-Component package by Kenichi Ishigaki (see
+The C<Games-Sudoku-Component> package by Kenichi Ishigaki (see
 L<http://search.cpan.org/dist/Games-Sudoku-Component/>) both
 generates and solves the standard 9x9 version of the puzzle.
 
-The Games-Sudoku-Component-TkPlayer by Kenichi Ishigaki (see
+The C<Games-Sudoku-Component-TkPlayer> by Kenichi Ishigaki (see
 L<http://search.cpan.org/dist/Games-Sudoku-Component-TkPlayer/>). Tk
 front end for his Games-Sudoku-Component.
 
-The Games-Sudoku-CPSearch package by Martin-Louis Bright (see
+The C<Games-Sudoku-CPSearch> package by Martin-Louis Bright (see
 L<http://search.cpan.prg/dist/Games-Sudoku-CPSearch/>). Solves 9x9
 Sudoku by use of "F" and "N" constraints and backtracking.
 
-The Games-Sudoku-Lite package by Bob O'Neill (see
+The C<Games-Sudoku-Lite package> by Bob O'Neill (see
 L<http://search.cpan.org/dist/Games-Sudoku-Lite/>) solves the standard
 9x9 version of the puzzle.
 
-The Games-Sudoku-OO package by Michael Cope (see
+The C<Games-Sudoku-OO> package by Michael Cope (see
 L<http://search.cpan.org/dist/Games-Sudoku-OO/>) also solves the
 standard 9x9 version of the puzzle, with an option to solve (to the
 extent possible) a single row, column, or square. The implementation may
 be extensible to other topologies than the standard one.
 
-The Games-Sudoku-SudokuTk package by Christian Guine (see
-L<http://search.cpan.org/dist/Games-Sudoku-SudokuTk/> claims to
-implement a Tk-based Sudoku solver, but as of version 0.05 the
-kit seems to be incomplete.
+The C<Games-Sudoku-Solver> package by Fritz Mehner (see
+L<http://search.cpan.org/dist/Games-Sudoku-Solver/>) solves 9x9 Sudoku
+puzzles by recursion and backtracking.
 
-The Games-YASudoku package by Andrew Wyllie (see
+The C<Games-Sudoku-SudokuTk> package by Christian Guine (see
+L<http://search.cpan.org/dist/Games-Sudoku-SudokuTk/> claims to
+implement a Tk-based Sudoku solver.
+
+The C<Games-YASudoku> package by Andrew Wyllie (see
 L<http://search.cpan.org/dist/Games-YASudoku/>) also solves the standard
 9x9 version of the puzzle. In contrast to the other packages, this one
 represents the board as a list of cell/value pairs.
