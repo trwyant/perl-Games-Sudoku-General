@@ -2568,63 +2568,6 @@ column for September 5 2005
 (L<http://www.maa.org/editorial/mathgames/mathgames_09_05_05.html>)
 provided a treasure trove of 'non-standard' Sudoku puzzles.
 
-=head1 MODIFICATIONS
-
- 0.001 T. R. Wyant
-   Initial release to CPAN.
- 0.002 T. R. Wyant
-   Format solution nicely for multi-character symbols.
-   Fixed error in values eliminated by a hidden tuple.
-   Recoded 'set sudokug' in terms of 'set brick', thus
-     fixing an error in generating the small squares.
-   Added method add_set(), and recoded 'set sudokux' in
-     terms of this and 'set sudokug', thus fixing the
-     same error that 'set sudoku' had.
-   Put spaces in the result of scalar constraints_used.
-   Spiffed up the POD.
- 0.003 T. R. Wyant
-   Added 'set corresponding' and 'set max_tuple'.
-   Added cubic sudoku (via 'set cube').
-   Fixed horrendous inefficiency in backtrack logic.
- 0.004 T. R. Wyant
-   Added Dion cube (via 'set cube number').
- 0.005 T. R. Wyant
-   Added generate() method and generation_limit
-       attribute.
-   Added rows attribute. This changes the default
-       output for 'multi-faced' puzzles.
- 0.006 T. R. Wyant
-   Fixed problem with 'set corresponding'. Thanks
-       to David Jelinek of Central Michigan University
-       for diagnosing the problem and finding a
-       solution.
-   Corrected spelling.
-   Eliminated Scalar::Util::looks_like_number, since
-       apparently ActivePerl does not have it.
-   Add copy() method and autocopy attribute, for getting
-       generated puzzles onto the clipboard.
-   Add paste() method, for loading puzzles from the
-       clipboard.
-   Add unload() method.
- 0.007 T. R. Wyant
-   Corrected example in topology attribute documentation,
-     and other documentation tweaks.
-   Moved General.pm to lib/Games/Sudoku.
-   Added Build.PL
- 0.008 T. R. Wyant
-   Tweak docs.
-   Support unused cells.
-   Add drop_set() method to undo add_set().
-   Add 'null' attribute to generate a puzzle with no topology.
-   Add 'quincunx' attribute to generate a quincunx (a.k.a.
-     'Samurai Sudoku')
- 0.009 T. R. Wyant
-   'use 5.006', for 'our' at the very least.
-   Update 'SEE ALSO'
-   add =head1 LICENSE to POD.
- 0.010 T. R. Wyant
-   Fixed Build.PL to heed -y and -n options.
-
 =head1 SEE ALSO
 
 The Games-Sudoku package by Eugene Kulesha (see
