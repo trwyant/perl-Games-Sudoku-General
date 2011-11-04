@@ -785,7 +785,7 @@ sub _copier_xclip {
 
 sub _copier_win32 {
     eval {
-	require Win32::Clipboard;
+	_require( 'Win32::Clipboard' );
 	1;
     } and return sub {
 	(my $s = join '', @_) =~ s/\n/\r\n/mg;
@@ -1125,7 +1125,7 @@ sub _paster_xclip {
 
 sub _paster_win32 {
     eval {
-	require Win32::Clipboard;
+	_require( 'Win32::Clipboard' );
 	1;
     } and return sub { return Win32::Clipboard->new()->Get(); };
     return;
@@ -1260,6 +1260,30 @@ eod
     $self->{debug} > 1 and print "         object = ", Dumper ($self);
 
     return $self;
+}
+
+{
+
+    my %required;
+
+    sub _require {
+	my ( $module ) = @_;
+	$required{$module}
+	    and return $required{$module}->();
+	( my $fn = $module ) =~ s{ :: }{/}smxg;
+	$fn .= '.pm';
+	eval {
+	    my $rslt = require $fn;
+	    $required{$module} = sub { return $rslt };
+	    1;
+	} or do {
+	    my $err = $@;
+	    $required{$module} = sub { die $err };
+	};
+
+	return $required{$module}->();
+
+    }
 }
 
 
