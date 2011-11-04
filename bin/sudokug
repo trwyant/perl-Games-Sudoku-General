@@ -660,25 +660,6 @@ preferred browser.
 
 =back
 
-=head1 MODIFICATIONS
-
- 0.001 T. R. Wyant
-   Initial release
- 0.003 T. R. Wyant
-   Documented methods and attributes added
-   since 0.001.
- 0.004 T. R. Wyant - Documented new use of cube attribute.
- 0.005 T. R. Wyant - Documented new methods and attributes.
- 0.006 T. R. Wyant
-   Corrected spelling.
-   Allowed input to be redirected or piped in.
-   Added -filter option.
-   Document new methods and attributes.
- 0.007 T. R. Wyant
-   Added the 'webcmd' pseudo-attribute.
-   Small documentation tweaks.
-   Fix the 'source' command.
-
 =head1 AUTHOR
 
 Thomas R. Wyant, III (F<wyant at cpan dot org>)
