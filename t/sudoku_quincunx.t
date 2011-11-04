@@ -3,17 +3,15 @@ package main;
 use strict;
 use warnings;
 
-use lib qw{ inc };
+use Test::More 0.88;
 
-use Games::Sudoku::General::TestDriver;
+use Games::Sudoku::General;
 
-Games::Sudoku::General::TestDriver->execute (*DATA);
+my $su = Games::Sudoku::General->new();
 
-1;
-__END__
+$su->set( quincunx => 3 );
 
-set quincunx 3
-problem <<eod
+$su->problem( <<'EOD' );
 . . .  . . 1  . . .         . . .  4 . .  . . .
 . . .  . 3 .  6 . .         . . 7  . 2 .  . . .
 . . .  7 . .  . 5 .         . 4 .  . . 5  . . .
@@ -41,9 +39,9 @@ problem <<eod
 . . .  9 . .  . 1 .         . 5 .  . . 8  . . .
 . . .  . 6 .  9 . .         . . 7  . 4 .  . . .
 . . .  . . 4  . . .         . . .  2 . .  . . .
-eod
-solution
-test <<eod 'May 2 2008' 'http://www.samurai-sudoku.com/'
+EOD
+
+is $su->solution(), <<EOD, 'May 2 2008 http://www.samurai-sudoku.com/';
 5 6 2 4 9 1 7 8 3       9 3 2 4 6 8 7 5 1
 7 9 8 5 3 2 6 1 4       5 1 7 9 2 3 6 8 4
 1 3 4 7 8 6 9 5 2       8 4 6 7 1 5 2 3 9
@@ -65,4 +63,10 @@ test <<eod 'May 2 2008' 'http://www.samurai-sudoku.com/'
 5 6 3 9 7 8 4 1 2       3 5 1 6 9 8 4 7 2
 4 8 1 3 6 2 9 7 5       8 2 7 5 4 1 9 6 3
 9 7 2 5 1 4 3 6 8       4 6 9 2 3 7 8 5 1
-eod
+EOD
+
+done_testing;
+
+1;
+
+# ex: set textwidth=72 :

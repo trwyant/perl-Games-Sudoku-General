@@ -3,7 +3,6 @@ Changes
 eg/README
 eg/simple
 eg/solver
-inc/Games/Sudoku/General/TestDriver.pm
 inc/My/Module/Build.pm
 inc/My/Module/Meta.pm
 lib/Games/Sudoku/General.pm

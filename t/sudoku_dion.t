@@ -3,17 +3,14 @@ package main;
 use strict;
 use warnings;
 
-use lib qw{ inc };
+use Test::More 0.88;
 
-use Games::Sudoku::General::TestDriver;
+use Games::Sudoku::General;
 
-Games::Sudoku::General::TestDriver->execute (*DATA);
+my $su = Games::Sudoku::General->new();
 
-1;
-__END__
-
-set cube 3
-problem <<eod
+$su->set( cube => 3 );
+$su->problem( <<'EOD' );
 . . . . 3 . . . .
 . 9 . . 4 . . 8 .
 . . . . . . . . .
@@ -103,9 +100,9 @@ problem <<eod
 . . . . . . . . .
 . 5 . . 3 . . 1 .
 . . . . 4 . . . .
-eod
-solution
-test <<eod 'Dion Cube 1' 'http://www.sudoku.org.uk/'
+EOD
+
+is $su->solution(), <<'EOD', 'Dion Cube 1 http://www.sudoku.org.uk/';
 2 5 4 7 3 8 6 1 9
 1 9 6 5 4 2 3 8 7
 8 7 3 9 6 1 4 2 5
@@ -195,5 +192,10 @@ test <<eod 'Dion Cube 1' 'http://www.sudoku.org.uk/'
 8 7 3 9 6 1 4 2 5
 2 5 4 7 3 8 6 1 9
 1 9 6 5 4 2 3 8 7
-eod
+EOD
 
+done_testing;
+
+1;
+
+# ex: set textwidth=72 :
