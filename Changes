@@ -1,3 +1,8 @@
+0.013		2012-01-04	T. R. Wyant
+   Remove unwanted cruft from Changes file, and bring it into compliance
+      with Test::CPAN::Changes. Add xt/author/changes.t to be sure it
+      stays that way.
+
 0.012		2011-12-20	T. R. Wyant
    Update copy of Gnu GPL in LICENSES/Copying to have current FSF
       address.
