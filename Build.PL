@@ -58,70 +58,27 @@ my @clean_files;
 my @possible_exes = ('sudokug');
 print <<'EOD';
 
-In addition to Games::Sudoku::General, you will get the following
+In addition to Games::Sudoku::General, you can get the following
 executable:
 
   sudokug -- an interactive interface to Games::Sudoku::General.
 
 If you do not want this, run Build.PL with the -n option.
 
-Unless you are running MSWin32 or VMS (which are special-cased),
-I will assume you're running some version of U*ix, and behave
-accordingly.
-
->>>> NOTICE <<<<
-
-Beginning with the first release after July 1 2015, sudokug will be
-installed by default. If you do not want it installed, provide the -n
-option when you run Build.PL.
-
-I also intend to get rid of the OS-specific ad-hocery at this point.
-
 EOD
 
 
 if ($opt{n}) {
+    $opt{y}
+	and die "You may not assert both -n and -y\n";
     print "Because you have asserted -n, the executables will not be installed.\n\n";
-    }
-  elsif ($opt{y}) {
-    print "Because you have asserted -y, the executables will be installed.\n\n";
+} else {
     @exe_files = @possible_exes;
-    }
-  else {
-    foreach (@possible_exes) {
-	push @exe_files, $_
-	if $bldr->prompt ("Do you want to install $_?", 'n') =~ m/^y/i
-	    ;
-	}
-    }
+}
 
 if (@exe_files) {
-    if ($^O eq 'MSWin32') {
-	@exe_files = map {"bin/$_"} @exe_files;
-	foreach (@exe_files) {`pl2bat $_`}
-	@clean_files = @exe_files =
-	    grep {-e $_} map {"$_.bat"} @exe_files;
-	}
-      elsif ($^O eq 'VMS') {
-	foreach my $fni (map {"[.bin]$_"} @exe_files) {
-	    my $fno = "$fni.com";
-	    my $fhi = FileHandle->new ("<$fni") or die <<eod;
-Error - Unable to open $fni
-        $!
-eod
-	    my $fho = FileHandle->new (">$fno") or die <<eod;
-Error - Unable to open $fno
-        $!
-eod
-	    print $fho "$Config{startperl}\n";
-	    while (<$fhi>) {print $fho $_}
-	    }
-	@clean_files = @exe_files = map {"[.bin]$_.com"} @exe_files;
-	}
-      else {
-	@exe_files = map {"bin/$_"} @exe_files;
-	}
-    }
+    @exe_files = map {"bin/$_"} @exe_files;
+}
 
 ##my $vers = $] >= 5.008 ? '-5.8' : '';
 

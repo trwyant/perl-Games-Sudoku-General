@@ -25,69 +25,27 @@ my @clean_files;
 
 print <<'EOD';
 
-In addition to Games::Sudoku::General, you will get the following
+In addition to Games::Sudoku::General, you can get the following
 executable:
 
   sudokug -- an interactive interface to Games::Sudoku::General.
 
-Unless you are running MSWin32 or VMS (which are special-cased),
-I will assume you are running some version of U*ix, and behave
-accordingly.
-
 If you do not want this executable installed, rerun this script
 with the -n qualifier.
 
->>>> NOTICE <<<<
-
-Beginning with the first release after July 1 2015, sudokug will be
-installed by default. If you do not want it installed, provide the -n
-option when you run Makefile.PL.
-
-I also intend to get rid of the OS-specific ad-hocery at this point.
-
 EOD
 
-if ($opt{n}) {
+if ( $opt{n} ) {
+    $opt{y}
+	and die "You may not assert both -n and -y\n";
     print "Because you have asserted -n, the executable will not be installed.\n\n";
-    }
-  elsif ( $opt{y} ) {
+} else {
     push @exe_files, qw{ sudokug };
-    print "Because you have asserted -y, the executable will be installed.\n";
-    }
-  else {
-    foreach (qw{sudokug}) {
-	push @exe_files, $_
-	    if prompt ("Do you want to install $_?", 'n') =~ m/^y/i;
-	}
-    }
+}
 
 if (@exe_files) {
-    if ($^O eq 'MSWin32') {
-	@exe_files = map {"bin/$_"} @exe_files;
-	foreach (@exe_files) {`pl2bat $_`}
-	@clean_files = @exe_files =
-	    grep {-e $_} map {"$_.bat"} @exe_files;
-	}
-      elsif ($^O eq 'VMS') {
-	foreach my $fni (map {"[.bin]$_"} @exe_files) {
-	    my $fno = "$fni.com";
-	    my $fhi = FileHandle->new ("<$fni") or die <<eod;
-Error - Unable to open $fni
-        $!
-eod
-	    my $fho = FileHandle->new (">$fno") or die <<eod;
-Error - Unable to open $fno
-        $!
-eod
-	    print $fho "$Config{startperl}\n";
-	    while (<$fhi>) {print $fho $_}
-	    }
-	@clean_files = @exe_files = map {"[.bin]$_.com"} @exe_files;
-	}
-      else {
-	@exe_files = map {"bin/$_"} @exe_files;
-	}
-    }
+    @exe_files = map {"bin/$_"} @exe_files;
+}
 
 
 ##my $vers = $] >= 5.008 ? '-5.8' : '';
