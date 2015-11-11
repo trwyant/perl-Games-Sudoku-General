@@ -1,3 +1,6 @@
+0.016		2015-11-11	T. R. Wyant
+  No changes since 0.015_01.
+
 0.015_01	2015-11-04	T. R. Wyant
   Remove {Build,Makefile}.PL question about sudokug installation.  Also
     remove OS-specific code to build the executable if it is in fact
