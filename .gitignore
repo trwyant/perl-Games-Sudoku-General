@@ -4,6 +4,7 @@
 /cover_db
 /Debian_CPANTS.txt
 /foo
+/Games-Sudoku-General*
 /Makefile
 /MANIFEST.bak
 /meta
@@ -14,4 +15,5 @@
 /nytprof*
 /pm_to_blib
 /ref
+.*.swp
 /TODO
