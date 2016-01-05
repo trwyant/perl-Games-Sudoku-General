@@ -25,18 +25,11 @@ my %attr = (
     build_requires	=> $meta->build_requires(),
     configure_requires	=> {},	# Don't require Module::Build.
     get_options => {y => {}, n => {}},
-    dynamic_config => 1,
     license => 'perl',
 );
 
-$mbv >= 0.28 and $attr{meta_merge} = {
-    no_index => {
-	directory => [qw{ inc t xt }],
-    },
-    resources => {
-	bugtracker => 'https://rt.cpan.org/Public/Dist/Display.html?Name=Games-Sudoku-General',
-    },
-};
+$mbv >= 0.28
+    and $attr{meta_merge} = $meta->meta_merge();
 
 # Don't require Module::Build if we're making a distribution, since the
 # the user may simply prefer ExtUtils::MakeMaker.
