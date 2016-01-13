@@ -1343,7 +1343,8 @@ eod
 }
 
 sub _set_allowed_symbols {
-    my ($self, $name, $value) = @_;
+##  my ( $self, $name, $value ) = @_;
+    my ( $self, undef, $value ) = @_;	# Name unused
     defined $value or $value = '';
     my $maxlen = 0;
     $self->{debug} and print <<eod;
@@ -1381,7 +1382,8 @@ eod
 }
 
 sub _set_brick {
-    my ($self, $name, $value) = @_;
+##  my ( $self, $name, $value ) = @_;
+    my ( $self, undef, $value ) = @_;	# Name unused
     my ($horiz, $vert, $size) = ref $value ? @$value : split ',', $value;
     $size ||= $horiz * $vert;
     ($size % $horiz || $size % $vert) and croak <<eod;
@@ -1405,7 +1407,8 @@ eod
 }
 
 sub _set_corresponding {
-    my ($self, $name, $order) = @_;
+##  my ( $self, $name, $order ) = @_;
+    my ( $self, undef, $order ) = @_;	# Name unused
     my $size = $order * $order;
     $self->set (sudoku => $order);
     my $order_minus_1 = $order - 1;
@@ -1463,7 +1466,8 @@ eod
 );
 
 sub _set_cube {
-    my ($self, $name, $type) = @_;
+##  my ( $self, $name, $type ) = @_;
+    my ( $self, undef, $type ) = @_;	# Name unused
     if ($type =~ m/\D/) {
 	$cube{$type} or croak <<eod;
 Error - Cube type '$type' is not defined. Legal values are numeric (for
@@ -1490,14 +1494,15 @@ eod
 }
 
 sub _cube_set_names {
-    my ($order, $name, $x, $y, $z) = @_;
+    my ( $order, $name, $x, $y, $z ) = @_;
     my $tplt = sprintf '%s%d%%s%%d', $name, $x;
     return map {sprintf $tplt, @$_} [r => $y], [c => $z],
 	[s => floor ($y / $order) * $order + floor ($z / $order)]
 }
 
 sub _set_latin {
-    my ($self, $name, $size) = @_;
+##  my ( $self, $name, $size ) = @_;
+    my ( $self, undef, $size ) = @_;	# Name unused
     my $syms = '.';
     my $topo = '';
     my $letter = 'A';
@@ -1514,7 +1519,8 @@ sub _set_latin {
 }
 
 sub _set_null {
-    my ($self, $name, $value) = @_;
+##  my ( $self, $name, $value ) = @_;
+    my ( $self, undef, $value ) = @_;	# Name unused
     my ($size, $columns, $rows) = ref $value ? @$value : split ',', $value;
     $self->{cell} = [];		# The cells themselves.
     $self->{set} = {};		# The sets themselves.
@@ -1532,7 +1538,7 @@ sub _set_null {
 }
 
 sub _set_number {
-    my ($self, $name, $value) = @_;
+    my ( $self, $name, $value ) = @_;
     _looks_like_number ($value) or croak <<eod;
 Error - Attribute $name must be numeric.
 eod
@@ -1541,7 +1547,8 @@ eod
 }
 
 sub _set_quincunx {
-    my ($self, $name, $value) = @_;
+##  my ( $self, $name, $value ) = @_;
+    my ( $self, undef, $value ) = @_;	# Name unused
     my ($order, $gap) = ref $value ? @$value : split ',', $value;
     $order =~ m/\D/ and croak <<eod;
 Error - The quincunx order must be an integer.
@@ -1621,17 +1628,15 @@ eod
 }
 
 sub _set_sudoku {
-    my $self = shift;
-    my $name = shift;
-    my $order = shift;
+##  my ( $self, $name, $order ) = @_;
+    my ( $self, undef, $order ) = @_;	# Name unused
     $self->set (brick => [$order, $order, $order * $order]);
     return;
 }
 
 sub _set_sudokux {
-    my $self = shift;
-    my $name = shift;
-    my $order = shift;
+##  my ( $self, $name, $order ) = @_;
+    my ( $self, undef, $order ) = @_;	# Name unused
     $self->set (sudoku => $order);
     my $size = $order * $order;
     my $size_minus_1 = $size - 1;
@@ -1642,9 +1647,8 @@ sub _set_sudokux {
 }
 
 sub _set_symbols {
-    my $self = shift;
-    my $name = shift;
-    my $value = shift;
+##  my ( $self, $name, $value ) = @_;
+    my ( $self, undef, $value ) = @_;	# Name unused
     my @lst = split '\s+', $value;
     my %hsh;
     my $inx = 0;
@@ -1669,7 +1673,8 @@ eod
 }
 
 sub _set_topology {
-    my ($self, $name, @args) = @_;
+##  my ( $self, $name, @args ) = @_;
+    my ( $self, undef, @args ) = @_;	# Name unused
     $self->{cell} = [];		# The cells themselves.
     $self->{set} = {};		# The sets themselves.
     $self->{largest_set} = 0;
