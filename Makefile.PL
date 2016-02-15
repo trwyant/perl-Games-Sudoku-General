@@ -50,7 +50,7 @@ if (@exe_files) {
 
 
 ##my $vers = $] >= 5.008 ? '-5.8' : '';
-my $vers = '';
+##my $vers = '';
 
 (my $mmv = ExtUtils::MakeMaker->VERSION) =~ s/_//g;
 my %attr = (
@@ -87,7 +87,7 @@ My::Module::Recommend->recommend();
 WriteMakefile(%attr);
 
 sub MY::postamble {
-    my ( $self, @args ) = @_;
+    my ( $self ) = @_;	# @args unused.
 
     my $authortest = $self->test_via_harness(
 	'$(FULLPERLRUN)', '$(AUTHORTEST_FILES)' );
