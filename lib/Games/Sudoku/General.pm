@@ -735,65 +735,19 @@ See L<CLIPBOARD SUPPORT> for what is needed for this to work.
     my $copier;
     sub copy {
 	my $self = shift;
-	$copier ||= $^O eq 'MSWin32' ? (_copier_win32 () ||
-		croak <<eod) :
-Error - Copy to clipboard unavailable. Can not load Win32::Clipboard.
-eod
-	    $^O eq 'cygwin' ? (_copier_win32 () || _copier_xclip () ||
-		croak <<eod) :
-Error - Copy to clipboard unavailable. Can not load Win32::Clipboard,
-        and xclip has not been installed. For xclip, see
-	http://freshmeat.net/projects/xclip
-eod
-	    $^O eq 'darwin' ? (_copier_pbcopy () || _copier_xclip () ||
-		croak <<eod) :
-Error - Copy to clipboard unavailable. Can not find the pbcopy program,
-        which is supposed to come with Mac OS X. Can not find xclip
-	either. For xclip, see http://freshmeat.net/projects/xclip.
-eod
-	    $^O eq 'MacOS' ? croak <<eod :
-Error - Copy to clipboard unavailable under Mac OS 9 or below.
-eod
-	    _copier_xclip () || croak <<eod;
-Error - Copy to clipboard unavailable. The xclip program has not been
-        installed. See http://freshmeat.net/projects/xclip for a copy.
-eod
-	$copier->($self->_unload ());
+	( $copier ||= eval {
+		require Clipboard;
+		Clipboard->import();
+		sub {
+		    Clipboard->copy( join '', @_ );
+		    return;
+		};
+	    }
+	) or croak 'copy() unavailable; can not load Clipboard';
+	$copier->( $self->_unload() );
 	return $self;
     }
 }
-
-sub _copier_external {
-    my ($code, $probe) = @_;
-    `$probe`;	# Don't care what it returns.
-    return $? ? undef : sub {
-	open my $hdl, '|-', $code
-	    or croak "Error - failed to open output handle to $code: $!";
-	print $hdl @_;
-	close $hdl;
-	return '';
-    }
-}
-
-sub _copier_pbcopy {
-    return _copier_external (pbcopy => 'pbcopy -help 2>&1');
-}
-
-sub _copier_xclip {
-    return _copier_external (xclip => 'xclip -o');
-}
-
-sub _copier_win32 {
-    eval {
-	_require( 'Win32::Clipboard' );
-	1;
-    } and return sub {
-	(my $s = join '', @_) =~ s/\n/\r\n/mg;
-	Win32::Clipboard->new ()->Set ($s);
-    };
-    return;
-}
-
 
 =item $su->drop_set ($name)
 
@@ -1071,66 +1025,22 @@ See L<CLIPBOARD SUPPORT> for what is needed for this to work.
     my $paster;
     sub paste {
 	my $self = shift;
-	$paster ||=  $^O eq 'MSWin32' ? (_paster_win32 () ||
-		croak <<eod) :
-Error - Paste from clipboard unavailable. Can not load Win32::Clipboard.
-eod
-	    $^O eq 'cygwin' ? (_paster_win32 () || _paster_xclip () ||
-		croak <<eod) :
-Error - Paste from clipboard unavailable. Can not load Win32::Clipboard,
-        and xclip has not been installed. For xclip, see
-	http://freshmeat.net/projects/xclip
-eod
-	    $^O eq 'darwin' ? (_paster_pbpaste () || _paster_xclip () ||
-		croak <<eod) :
-Error - Paste from clipboard unavailable. Can not find the pbpaste
-        program, which is supposed to come with Mac OS X. Can not find
-	xclip either. For xclip, see http://freshmeat.net/projects/xclip.
-eod
-	    $^O eq 'MacOS' ? croak <<eod :
-Error - Paste from clipboard unavailable under Mac OS 9 or below.
-eod
-	    (_paster_xclip () || croak <<eod);
-Error - Paste from clipboard unavailable. The xclip program has not been
-        installed. See http://freshmeat.net/projects/xclip for a copy.
-eod
-	$self->problem ($paster->());
-	$self->_unload ();
+	( $paster ||= eval {
+		require Clipboard;
+		Clipboard->import();
+		return sub {
+		    return Clipboard->paste();
+		};
+	    }
+	) or croak 'paste() unavailable; can not load Clipboard';
+
+	$self->problem( $paster->() );
+	$self->_unload();
 	return $self;
     }
 
 
 }	#	End local symbol block
-
-sub _paster_external {
-    my ($code, $probe) = @_;
-    `$probe`;	# Not interested in what probe returns.
-    return $? ? undef : sub {
-	local $/ = undef;
-	open my $hdl, '-|', $code
-	    or croak "Error - failed to open input handle from $code: $!";
-	my $buffer = <$hdl>;
-	close $hdl;
-	return $buffer;
-    }
-}
-
-sub _paster_pbpaste {
-    return _paster_external (pbpaste => 'pbpaste -help 2>&1');
-}
-
-sub _paster_xclip {
-    return _copier_external ('xclip -o' => 'xclip -o');
-}
-
-sub _paster_win32 {
-    eval {
-	_require( 'Win32::Clipboard' );
-	1;
-    } and return sub { return Win32::Clipboard->new()->Get(); };
-    return;
-}
-
 
 =item $su->problem ($string);
 
@@ -1261,32 +1171,6 @@ eod
 
     return $self;
 }
-
-{
-
-    my %required;
-
-    sub _require {
-	my ( $module ) = @_;
-	$required{$module}
-	    and return $required{$module}->();
-	( my $fn = $module ) =~ s{ :: }{/}smxg;
-	$fn .= '.pm';
-	eval {
-	    my $rslt = require $fn;
-	    $required{$module} = sub { return $rslt };
-	    1;
-	} or do {
-	    my $err = $@;
-	    $required{$module} = sub { die $err };
-	};
-
-	return $required{$module}->();
-
-    }
-}
-
-
 
 my %mutator = (
     allowed_symbols => \&_set_allowed_symbols,

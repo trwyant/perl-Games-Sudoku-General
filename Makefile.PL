@@ -10,6 +10,7 @@ use ExtUtils::MakeMaker qw{WriteMakefile prompt};
 use FileHandle;
 use Getopt::Std;
 use My::Module::Meta;
+use My::Module::Recommend;
 
 my $meta = My::Module::Meta->new();
 
@@ -80,6 +81,8 @@ $mmv >= 6.5501
     and $attr{BUILD_REQUIRES} = $meta->build_requires()
     or $mmv >= 6.4501
     and $attr{META_MERGE}{build_requires} = $meta->build_requires();
+
+My::Module::Recommend->recommend();
 
 WriteMakefile(%attr);
 

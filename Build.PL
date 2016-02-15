@@ -4,12 +4,14 @@ use strict;
 use warnings;
 
 use lib qw{ inc };
+
 use base qw{ My::Module::Build };
 
 use Config;
 use FileHandle;
 use Module::Build;
 use My::Module::Meta;
+use My::Module::Recommend;
 
 (my $mbv = Module::Build->VERSION) =~ s/_//g;
 
@@ -75,6 +77,10 @@ if (@exe_files) {
 }
 
 ##my $vers = $] >= 5.008 ? '-5.8' : '';
+
+#	Recommend modules
+
+My::Module::Recommend->recommend();
 
 #	Tell Module::Build what we want to do.
 
