@@ -713,7 +713,7 @@ version 0.001
 =cut
 
 sub constraints_used {
-    my $self = shift;
+    my ( $self ) = @_;
     return unless $self->{constraints_used} && defined wantarray;
     return %{$self->{constraints_used}} if wantarray;
     my $rslt = join ' ', grep {
@@ -734,7 +734,7 @@ See L<CLIPBOARD SUPPORT> for what is needed for this to work.
 {	# Local symbol block.
     my $copier;
     sub copy {
-	my $self = shift;
+	my ( $self ) = @_;
 	( $copier ||= eval {
 		require Clipboard;
 		Clipboard->import();
@@ -858,14 +858,14 @@ one solution.
 =cut
 
 sub generate {
-    my $self = shift;
+    my ( $self, $min, $max, $const ) = @_;
     my $size = @{$self->{cell}} - $self->{cells_unused};
-    my $min = shift || do {
-	floor ($size * $size /
-	    ($self->{largest_set} * keys %{$self->{set}}));
+    $min ||= do {
+	floor( $size * $size /
+	    ( $self->{largest_set} * keys %{ $self->{set} } ) );
     };
-    my $max = shift || floor ($min * 1.5);
-    my $const = shift || 'F N B T';
+    $max ||= floor( $min * 1.5 );
+    $const ||= 'F N B T';
     croak <<eod if ref $const && ref $const ne 'HASH';
 Error - The constraints argument must be a string or a hash reference,
     not a @{[ref $const]} reference.
@@ -967,7 +967,7 @@ eod
 }
 
 sub _get_allowed_symbols {
-    my $self = shift;
+    my ( $self ) = @_;
     my $rslt = '';
     my $syms = @{$self->{symbol_list}};
     foreach (sort keys %{$self->{allowed_symbols}}) {
@@ -982,12 +982,12 @@ sub _get_allowed_symbols {
 }
 
 sub _get_symbols {
-    my $self = shift;
+    my ( $self ) = @_;
     return join ' ', @{$self->{symbol_list}};
 }
 
 sub _get_topology {
-    my $self = shift;
+    my ( $self ) = @_;
     my $rslt = '';
     my $col = $self->{columns};
     my $row = $self->{rows} ||= floor (@{$self->{cell}} / $col);
@@ -1024,7 +1024,7 @@ See L<CLIPBOARD SUPPORT> for what is needed for this to work.
 
     my $paster;
     sub paste {
-	my $self = shift;
+	my ( $self ) = @_;
 	( $paster ||= eval {
 		require Clipboard;
 		Clipboard->import();
@@ -1071,8 +1071,8 @@ time you set the symbol names.
 =cut
 
 sub problem {
-    my $self = shift;
-    my $val = shift || '';
+    my ( $self, $val ) = @_;
+    $val ||= '';
     $val =~ m/\S/ or
 	$val = "$self->{symbol_list}[0] " x
 	(scalar @{$self->{cell}} - $self->{cells_unused});
@@ -1215,13 +1215,13 @@ The object itself is returned.
 =cut
 
 sub set {
-    my $self = shift;
-    while (@_) {
-	my $name = shift;
+    my ( $self, @args ) = @_;
+    while ( @args ) {
+	my ( $name, $val ) = splice @args, 0, 2;
 	exists $mutator{$name} or croak <<eod;
 Error - Attribute $name does not exist, or is read-only.
 eod
-	$mutator{$name}->($self, $name, shift);
+	$mutator{$name}->($self, $name, $val );
     }
     return $self;
 }
@@ -1496,9 +1496,7 @@ eod
 }
 
 sub _set_status_value {
-    my $self = shift;
-    my $name = shift;
-    my $value = shift;
+    my ( $self, $name, $value ) = @_;
     _looks_like_number ($value) or croak <<eod;
 Error - Attribute $name must be numeric.
 eod
@@ -1608,7 +1606,7 @@ Status values set:
 =cut
 
 sub solution {
-    my $self = shift;
+    my ( $self ) = @_;
 
     $self->{backtrack_stack} or croak <<eod;
 Error - You cannot call the solution() method unless you have specified
@@ -1669,7 +1667,7 @@ in scalar context, it is the symbol itself.
 =cut
 
 sub steps {
-    my $self = shift;
+    my ( $self ) = @_;
     return wantarray ? (@{$self->{backtrack_stack}}) :
 	defined wantarray ?
 	    $self->_format_constraint (@{$self->{backtrack_stack}}) :
@@ -1685,7 +1683,7 @@ puzzle was loaded.
 =cut
 
 sub unload {
-    my $self = shift;
+    my ( $self ) = @_;
     return $self->_unload ()
 }
 
@@ -1707,7 +1705,7 @@ my %constraint_method = (
 );
 
 sub _constrain {
-    my $self = shift;
+    my ( $self ) = @_;
     my $stack = $self->{backtrack_stack} ||= [];	# May hit this
 							# when initializing.
     my $used = $self->{constraints_used} ||= {};
@@ -1776,7 +1774,7 @@ eod
 #	progress.
 
 sub _constraint_F {
-    my $self = shift;
+    my ( $self ) = @_;
     my @stack;
     my $done = 1;
 
@@ -1828,7 +1826,7 @@ eod
 #	N constraint - the only cell which supplies a necessary value.
 
 sub _constraint_N {
-    my $self = shift;
+    my ( $self ) = @_;
     while (my ($name, $set) = each %{$self->{set}}) {
 	my @suppliers;
 	foreach my $inx (@{$set->{membership}}) {
@@ -1874,7 +1872,7 @@ eod
 #	other can be a row or a column.
 
 sub _constraint_B {
-    my $self = shift;
+    my ( $self ) = @_;
     my $done = 0;
     while (my ($int, $cells) = each %{$self->{intersection}}) {
 	next unless @$cells > 1;
@@ -1953,7 +1951,7 @@ sub _constraint_B {
 #	Angus separates naked and hidden tuples.
 
 sub _constraint_T {
-    my $self = shift;
+    my ( $self ) = @_;
     my @tuple;		# Tuple indices
     my %vacant;		# Empty cells by set. $vacant{$set} = [$cell ...]
     my %contributors;	# Number of cells which can contrib value, by set.
@@ -2098,7 +2096,7 @@ sub _constraint_T {
 # ? constraint - initiate backtracking.
 
 sub _constraint_backtrack {
-    my $self = shift;
+    my ( $self ) = @_;
 ##  --$iterations >= 0 or return $self->_unload ('', SUDOKU_TOO_HARD)
 ##	if defined $iterations;
     my @try;
@@ -2150,12 +2148,9 @@ eod
 #		be removed any number of times.
 
 sub _constraint_remove {
-    my $self = shift;
-    my $min = shift;
+    my ( $self, $min, $max, $removal_ok ) = @_;
     $min and $min = @{$self->{cell}} - $min;
-    my $max = shift;
     $max and $max = @{$self->{cell}} - $max;
-    my $removal_ok = shift;
     $self->{no_more_solutions} and return SUDOKU_NO_SOLUTION;
     my $stack = $self->{backtrack_stack} or return SUDOKU_NO_SOLUTION;
     my $used = $self->{constraints_used} ||= {};
@@ -2278,7 +2273,7 @@ sub _format_constraint {
 #	looks_like_number.
 
 sub _looks_like_number {
-    local $_ = shift;
+    ( local $_ ) = @_;
     return 0 if !defined ($_) || ref ($_);
     return 1 if m/^[+-]?\d+$/;
     return 0;
@@ -2298,10 +2293,10 @@ sub _looks_like_number {
 #	does not undo the trial.
 
 sub _try {
-    my $self = shift;
-    my $cell = shift;
+    my ( $self, $cell, $new ) = @_;
     $cell = $self->{cell}[$cell] unless ref $cell;
-    defined (my $new = shift) or _fatal (
+    defined $new
+	or _fatal (
 	"_try called for cell $cell->{index} with new value undefined");
     defined (my $old = $cell->{content}) or _fatal (
 	"_try called with old cell $cell->{index} value undefined");
