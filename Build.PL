@@ -26,6 +26,7 @@ my %attr = (
     configure_requires	=> {},	# Don't require Module::Build.
     get_options => {y => {}, n => {}},
     license => 'perl',
+    add_to_cleanup	=> [ qw{ cover_db } ],
 );
 
 $mbv >= 0.28
