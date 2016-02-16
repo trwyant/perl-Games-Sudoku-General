@@ -368,17 +368,12 @@ This "virtual" attribute is a convenience, which causes the object to
 be configured with the given number of cells, but no topology. The
 topology must be added later using the add_set method once for each
 set of cells to be created.
+
 The value must be either a comma-separated list of one to three numbers
 (e.g. '81,9,9') or a reference to a list containing one to three
 numbers (e.g. [81, 9, 9]). The first (and only required) number gives the
 number of cells. The second, if supplied, sets the 'columns' attribute,
-and the third, if supplied, sets the 'rows' attribute.
-
-value set must be either a comma-separated list of three numbers (e.g.
-'3,2,6') or a reference to a list containing three numbers (e.g. [3, 2,
-6]). Either way, the numbers represent the horizontal dimension of the
-rectangle (in columns), the vertical dimension of the rectangle (in
-rows), and the overall size of the puzzle square. For example,
+and the third, if supplied, sets the 'rows' attribute. For example,
 
  $su->set (null => [36, 6]);
  $su->add_set (r0 => 0, 1, 2, 3, 4, 5);
@@ -393,7 +388,7 @@ rows), and the overall size of the puzzle square. For example,
 
 Generates the topology equivalent to
 
- $su->set (brick => [3, 2, 6])
+ $su->set (brick => [3, 2])
 
 =item output_delimiter (string)
 
