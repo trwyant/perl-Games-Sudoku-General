@@ -32,6 +32,9 @@ $su->problem( <<'EOD' );
 ...4..7894.6...1...8.....5.2.4..5....95.........9.2345.3..7.9.8.67..1...9....8..2
 EOD
 
+$su->set( name => 'Taxonomy' );
+is $su->get( 'name' ), 'Taxonomy', 'Get and set name';
+
 is $su->unload(), <<'EOD', 'Unload function';
 . . . 4 . . 7 8 9
 4 . 6 . . . 1 . .
@@ -69,6 +72,66 @@ is $su->solution(), <<'EOD',
 9 4 1 5 3 8 6 7 2
 EOD
     "Constraint Taxonomy 1 (F) - Glenn Fowler $gsftax";
+
+note <<'EOD';
+The following test is a bit fragile in that if I fiddle with the
+algorithm the results will probably change.
+EOD
+
+is scalar $su->steps(), <<'EOD', 'Steps for solution';
+F [17 3]
+F [70 3]
+F [71 4]
+F [74 1]
+F [16 2]
+F [26 6]
+F [47 8]
+F [54 5]
+F [56 2]
+F [57 6]
+F [59 4]
+F [61 1]
+F [63 8]
+F [69 5]
+F [73 4]
+F [78 6]
+F [79 7]
+F [2 3]
+F [5 6]
+F [20 9]
+F [24 4]
+F [33 8]
+F [42 2]
+F [43 6]
+F [66 2]
+F [67 9]
+F [0 1]
+F [18 7]
+F [23 3]
+F [34 9]
+F [36 3]
+F [41 7]
+F [44 1]
+F [45 6]
+F [49 1]
+F [10 5]
+F [13 8]
+F [14 9]
+F [21 1]
+F [22 2]
+F [30 3]
+F [31 6]
+F [35 7]
+F [39 8]
+F [40 4]
+F [46 7]
+F [75 5]
+F [76 3]
+F [1 2]
+F [4 5]
+F [12 7]
+F [28 1]
+EOD
 
 is $su->constraints_used(), 'F',
     'Check that we in fact used only the "F" constraint';
