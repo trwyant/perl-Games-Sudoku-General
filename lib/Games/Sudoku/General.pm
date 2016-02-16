@@ -178,7 +178,11 @@ and defaults to the product of the horizontal and vertical
 dimensions. B<Note> that I am B<strongly> considering eliminating this
 value, since it appears to me that any value other than the default
 results in an impossible puzzle. As of version 0.005_01, specification
-of the third value is deprecated. 
+of the third value is deprecated. At the first release after September 1
+2016 a warning will be displayed the first time three values are
+supplied. After a further six months this will progress to a warning
+every time three values are supplied. Finally, supplying three values
+will become a fatal error.
 
 Setting this attribute modifies the following "real" attributes:
 
@@ -801,7 +805,7 @@ freedom and the observation that about a third of the cells are given
 in a typical Sudoku puzzle. My experience with the default is:
 
  topology        comment
- brick 3,2,6     default is OK
+ brick 3,2       default is OK
  corresponding 3 default is OK
  cube 3          default is too large
  cube half       default is OK
@@ -1263,9 +1267,10 @@ eod
 }
 
 sub _set_brick {
-##  my ( $self, $name, $value ) = @_;
-    my ( $self, undef, $value ) = @_;	# Name unused
+    my ( $self, undef, $value ) = @_;	# $name unused
     my ($horiz, $vert, $size) = ref $value ? @$value : split ',', $value;
+    defined $size
+	and $self->_deprecation_notice( 'brick_third_argument' );
     $size ||= $horiz * $vert;
     ($size % $horiz || $size % $vert) and croak <<eod;
 Error - The puzzle size $size must be a multiple of both the horizontal
@@ -1509,7 +1514,7 @@ eod
 sub _set_sudoku {
 ##  my ( $self, $name, $order ) = @_;
     my ( $self, undef, $order ) = @_;	# Name unused
-    $self->set (brick => [$order, $order, $order * $order]);
+    $self->set( brick => [ $order, $order ] );
     return;
 }
 
@@ -2238,6 +2243,41 @@ eod
 eod
     $self->{no_more_solutions} = 1;
     return SUDOKU_NO_SOLUTION;
+}
+
+#	$self->_deprecation_notice( $name );
+#
+#	This method centralizes deprecation. Deprecation is driven of
+#	the %deprecate hash. Level values are:
+#	    false - no warning
+#	    1 - warn on first use
+#	    2 - warn on each use
+#	    3 - die on each use.
+
+{
+
+    my %deprecate = (
+	brick_third_argument	=> {
+	    message	=> 'Specifying 3 values for set( brick => ... ) is deprecated',
+	    level	=> 0,
+	},
+    );
+
+    sub _deprecation_notice {
+	my ( undef, $name ) = @_;	# Invocant unused
+	my $info = $deprecate{$name}
+	    or return;
+	$info->{level}
+	    or return;
+	$info->{level} >= 3
+	    and croak $info->{message};
+	warnings::enabled( 'deprecated' )
+	    and carp $info->{message};
+	$info->{level} == 1
+	    and $info->{level} = 0;
+	return;
+    }
+
 }
 
 #	_format_constraint formats the given constraint for output.
