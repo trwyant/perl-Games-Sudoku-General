@@ -29,7 +29,6 @@ sub harness_switches {
 	    or next;
 	$_ .= '=-db,cover_db,-ignore,inc/mock/';
     }
-    warn "Debug - @res";
     return @res;
 }
 
