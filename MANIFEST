@@ -3,6 +3,7 @@ Changes
 eg/README
 eg/simple
 eg/solver
+inc/mock/Clipboard.pm
 inc/My/Module/Build.pm
 inc/My/Module/Meta.pm
 inc/My/Module/Recommend.pm

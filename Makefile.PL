@@ -103,7 +103,7 @@ authortest :: pure_all
 	AUTHOR_TESTING=1 $authortest
 
 testcover :: pure_all
-	cover -test
+	cover -test -ignore_re=inc/mock/
 EOD
 }
 

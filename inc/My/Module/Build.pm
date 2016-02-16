@@ -21,6 +21,18 @@ sub ACTION_authortest {
     return;
 }
 
+sub harness_switches {
+    my ( $self ) = @_;
+    my @res = $self->SUPER::harness_switches();
+    foreach ( @res ) {
+	'-MDevel::Cover' eq $_
+	    or next;
+	$_ .= '=-db,cover_db,-ignore,inc/mock/';
+    }
+    warn "Debug - @res";
+    return @res;
+}
+
 1;
 
 __END__

@@ -3,6 +3,8 @@ package main;
 use strict;
 use warnings;
 
+use lib qw{ inc/mock };	# For the mock Clipboard object.
+
 use Games::Sudoku::General;
 use Test::More 0.88;
 
@@ -42,6 +44,19 @@ is $su->unload(), <<'EOD', 'Unload function';
 9 . . . . 8 . . 2
 EOD
 
+$su->copy();
+is( Clipboard->paste(), <<'EOD', 'Copy to clipboard' );
+. . . 4 . . 7 8 9
+4 . 6 . . . 1 . .
+. 8 . . . . . 5 .
+2 . 4 . . 5 . . .
+. 9 5 . . . . . .
+. . . 9 . 2 3 4 5
+. 3 . . 7 . 9 . 8
+. 6 7 . . 1 . . .
+9 . . . . 8 . . 2
+EOD
+
 is $su->solution(), <<'EOD',
 1 2 3 4 5 6 7 8 9
 4 5 6 7 8 9 1 2 3
@@ -57,6 +72,19 @@ EOD
 
 is $su->constraints_used(), 'F',
     'Check that we in fact used only the "F" constraint';
+
+$su->paste();
+is $su->unload(), <<'EOD', 'Paste unsolved puzzle back in';
+. . . 4 . . 7 8 9
+4 . 6 . . . 1 . .
+. 8 . . . . . 5 .
+2 . 4 . . 5 . . .
+. 9 5 . . . . . .
+. . . 9 . 2 3 4 5
+. 3 . . 7 . 9 . 8
+. 6 7 . . 1 . . .
+9 . . . . 8 . . 2
+EOD
 
 $su->set( symbols => '. A B C D E F G H I' );
 $su->problem( <<'EOD' );
@@ -614,6 +642,22 @@ is $su->get( 'columns' ), 4, 'Latin square columns';
 is $su->get( 'symbols' ), '. A B C D', 'Latin square symbols';
 
 is $su->get( 'topology' ), <<'EOD', 'Latin square topology';
+c0,r0 c1,r0 c2,r0 c3,r0
+c0,r1 c1,r1 c2,r1 c3,r1
+c0,r2 c1,r2 c2,r2 c3,r2
+c0,r3 c1,r3 c2,r3 c3,r3
+EOD
+
+$su->add_set( d0 => 0, 5, 10, 15 );
+is $su->get( 'topology' ), <<'EOD', 'Add main diagonal to Latin square';
+c0,d0,r0 c1,r0 c2,r0 c3,r0
+c0,r1 c1,d0,r1 c2,r1 c3,r1
+c0,r2 c1,r2 c2,d0,r2 c3,r2
+c0,r3 c1,r3 c2,r3 c3,d0,r3
+EOD
+
+$su->drop_set( 'd0' );
+is $su->get( 'topology' ), <<'EOD', 'Remove main diagonal again';
 c0,r0 c1,r0 c2,r0 c3,r0
 c0,r1 c1,r1 c2,r1 c3,r1
 c0,r2 c1,r2 c2,r2 c3,r2
