@@ -727,7 +727,8 @@ sub constraints_used {
 This method copies the current problem to the clipboard. If solution()
 has been called, the current solution goes on the clipboard.
 
-See L<CLIPBOARD SUPPORT> for what is needed for this to work.
+See L<CLIPBOARD SUPPORT|/CLIPBOARD SUPPORT> for what is needed for this
+to work.
 
 =cut
 
@@ -1016,7 +1017,8 @@ sub _get_value {return $_[0]->{$_[1]}}
 
 This method pastes a problem from the clipboard.
 
-See L<CLIPBOARD SUPPORT> for what is needed for this to work.
+See L<CLIPBOARD SUPPORT|/CLIPBOARD SUPPORT> for what is needed for this
+to work.
 
 =cut
 
@@ -2390,38 +2392,9 @@ which is a command-driven interface to this module.
 
 =head1 CLIPBOARD SUPPORT
 
-Clipboard support is highly OS-specific. Here is the story by OS - or,
-really, by the contents of $^O:
-
-=head2 cygwin
-
-Under cygwin, we first try to load the Win32::Clipboard module. If this
-succeeds, we use it. If not, we try to use the xclip program, available
-from L<http://freshmeat.net/project/xclip>.
-
-=head2 darwin
-
-Under Darwin, also known as Mac OS X, we use the pbcopy programs to
-copy text to the clipboard, and pbpaste to retrieve text from the
-clipboard. These programs are supposed to come with Mac OS X. If pbcopy
-or pbpaste (depending on what we are trying to do) is not found, we try
-xclip, under the assumption that you are running Darwin without the Mac
-OS X overlay. The xclip program is available from
-L<http://freshmeat.net/project/xclip>.
-
-=head2 MacOS
-
-Under MacOS (meaning OS 9 or below) we currently have no way to put
-text onto the clipboard.
-
-=head2 MSWin32
-
-Under Windows, we use Win32::Clipboard if available.
-
-=head2 Anything else
-
-Under any other operating system, we try to use the xclip program,
-available from L<http://freshmeat.net/project/xclip>.
+Clipboard support is via the L<Clipboard|Clipboard> module. If this is
+not installed, the C<copy()> and C<paste()> methods will throw
+exceptions.
 
 =head1 BUGS
 
