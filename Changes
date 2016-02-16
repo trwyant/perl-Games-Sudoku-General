@@ -1,3 +1,14 @@
+0.017_01	2016-02-16	T. R. Wyant
+  Deprecate 3rd value in set( brick => ... );
+    This has been documented as deprecated for some time. This update
+    documents a deprecation schedule, and includes machinery to display
+    deprecation warnings.
+
+  Move clipboard functionality to module Clipboard. This module is
+    optional; without it copy() and paste() throw exceptions.
+
+  Add Makefile targets authortest, testcover.
+
 0.017		2016-01-05	T. R. Wyant
   Add GitHub repository to metadata.
 

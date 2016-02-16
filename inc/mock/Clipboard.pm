@@ -7,7 +7,7 @@ use warnings;
 
 use Carp;
 
-our $VERSION = '0.017';
+our $VERSION = '0.017_01';
 
 sub import {
     return;
