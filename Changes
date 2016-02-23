@@ -1,3 +1,6 @@
+0.017_02	2016-02-23	T. R. Wyant
+  Add optional-modules testing.
+
 0.017_01	2016-02-16	T. R. Wyant
   Deprecate 3rd value in set( brick => ... );
     This has been documented as deprecated for some time. This update
