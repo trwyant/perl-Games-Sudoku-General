@@ -4,10 +4,13 @@ use strict;
 use warnings;
 
 use Carp;
+use My::Module::Recommend::Any qw{ __any };
 
 my @optionals = (
-    [ 'Clipboard'		=> <<'EOD' ],
+    __any( 'Clipboard'		=> <<'EOD' ),
       This module is needed to exchange data with the system clipboard.
+      If you do not intend to use the copy() or paste() methods, you do
+      not need to install this module.
 EOD
 );
 
@@ -69,35 +72,20 @@ EOD
 }
 
 sub optionals {
-    my @rslt;
-    foreach my $spec ( @optionals ) {
-	my $module = $spec->[0];
-	if ( 'ARRAY' eq ref $module ) {
-	    push @rslt, @{ $module };
-	} elsif ( ref $module ) {
-	    confess 'Module spec may not be a ', ref $module, ' reference';
-	} else {
-	    push @rslt, $module;
-	}
-    }
-    return @rslt;
+    return ( map { $_->modules() } @optionals );
 }
 
 sub recommend {
     my $need_some;
-    SPEC_LOOP:
-    foreach my $spec ( @optionals ) {
-	my ( $module, $message ) = @{ $spec };
-	foreach my $mod ( ref $module ? @{ $module } : $module ) {
-	    eval "require $mod; 1"
-		and next SPEC_LOOP;
-	}
+    foreach my $mod ( @optionals ) {
+	defined( my $msg = $mod->recommend() )
+	    or next;
 	$need_some++
 	    or warn <<'EOD';
 
-The following optional modules were not found:
+The following optional modules were not available:
 EOD
-	warn format_module_line( $module ), $message;
+	warn "\n$msg";
     }
     $need_some
 	and warn <<'EOD';
@@ -110,15 +98,9 @@ EOD
     return;
 }
 
-sub format_module_line {
-    my ( $module ) = @_;
-    ref $module
-	or return "\n    * $module is not installed.\n";
-    return "\n    * None of " . join( ', ', @{ $module } ) .
-	" is installed.\n";
-}
-
 1;
+
+__END__
 
 =head1 NAME
 
@@ -195,7 +177,5 @@ without any warranty; without even the implied warranty of
 merchantability or fitness for a particular purpose.
 
 =cut
-
-__END__
 
 # ex: set textwidth=72 :

@@ -7,6 +7,7 @@ inc/mock/Clipboard.pm
 inc/My/Module/Build.pm
 inc/My/Module/Meta.pm
 inc/My/Module/Recommend.pm
+inc/My/Module/Recommend/Any.pm
 lib/Games/Sudoku/General.pm
 Build.PL
 LICENSES/Artistic
