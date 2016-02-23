@@ -66,7 +66,7 @@ my %attr = (
     AUTHOR => 'Tom Wyant (wyant at cpan dot org)',
     ABSTRACT => 'Solve Sudoku and related puzzles',
 #   BINARY_LOCATION => "$Config{archname}$vers/Games-Sudoku-General.tar.gz",
-    realclean	=> { FILES => 'cover_db' },
+    realclean	=> { FILES => 'cover_db xt/author/optionals' },
 );
 
 
@@ -97,9 +97,10 @@ sub MY::postamble {
 
     return <<"EOD";
 
-AUTHORTEST_FILES = t/*.t xt/author/*.t
+AUTHORTEST_FILES = t/*.t xt/author/*.t xt/author/optionals/*.t
 
 authortest :: pure_all
+	\$(FULLPERLRUN) "-Iinc" "-MMy::Module::Recommend" "-e" "My::Module::Recommend->make_optional_modules_tests()"
 	AUTHOR_TESTING=1 $authortest
 
 testcover :: pure_all

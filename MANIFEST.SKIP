@@ -18,6 +18,7 @@ CVS/
 ^ref/
 ^t/sudoku_dion\.t$
 ^t/sudoku_quincunx\.t$
+^xt/author/optionals/
 \.svn/
 \.swp$
 ^TODO$
