@@ -577,7 +577,7 @@ This package provides the following public methods:
 
 package Games::Sudoku::General;
 
-use 5.006;	# For 'our', at least.
+use 5.006002;	# For 'our', at least.
 
 use strict;
 use warnings;
