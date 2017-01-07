@@ -582,7 +582,7 @@ use 5.006002;	# For 'our', at least.
 use strict;
 use warnings;
 
-use base qw{Exporter};
+use Exporter qw{ import };
 
 our $VERSION = '0.018';
 our @EXPORT_OK = qw{
