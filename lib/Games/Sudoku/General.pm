@@ -612,6 +612,8 @@ my @status_values = (
     'Multiple solutions found',
 );
 
+use constant HASH_REF	=> ref {};
+
 =item $su = Games::Sudoku::General->new ()
 
 This method instantiates a new Games::Sudoku::General object. Any
@@ -866,14 +868,14 @@ sub generate {
     };
     $max ||= floor( $min * 1.5 );
     $const ||= 'F N B T';
-    croak <<eod if ref $const && ref $const ne 'HASH';
+    croak <<"EOD" if ref $const && HASH_REF ne ref $const;
 Error - The constraints argument must be a string or a hash reference,
     not a @{[ref $const]} reference.
-eod
+EOD
     $const = {map {my @ret; $_ and do {
 	    @ret = split '=', $_, 2; push @ret, undef while @ret < 2}; @ret}
 	    split '\s+', $const}
-	unless ref $const eq 'HASH';
+	unless HASH_REF eq ref $const;
     $self->{debug} and do {
 	local $Data::Dumper::Terse = 1;
 	print <<eod;
