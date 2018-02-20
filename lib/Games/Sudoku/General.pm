@@ -147,15 +147,15 @@ This attribute is false by default.
 
 =item brick (string, write-only)
 
-This "virtual" attribute is a convenience, which causes the object to
-be configured with a topology of rows, columns, and rectangles. The
-value set must be either a comma-separated list of three numbers (e.g.
-'3,2,6') or a reference to a list containing three numbers (e.g. [3, 2,
-6]). Either way, the numbers represent the horizontal dimension of the
-rectangle (in columns), the vertical dimension of the rectangle (in
-rows), and the overall size of the puzzle square. For example,
+This "virtual" attribute is a convenience, which causes the object to be
+configured with a topology of rows, columns, and rectangles. The value
+set must be either a comma-separated list of two numbers (e.g.  '3,2')
+or a reference to a list containing two numbers (e.g. [3, 2]). Either
+way, the numbers represent the horizontal dimension of the rectangle (in
+columns) and the vertical dimension of the rectangle (in rows). The
+overall size of the puzzle square is the product of these.  For example,
 
- $su->set (brick => [3, 2, 6])
+ $su->set( brick => [ 3, 2 ] )
 
 generates a topology that looks like this
 
@@ -170,19 +170,13 @@ generates a topology that looks like this
  | x x x | x x x |
  +-------+-------+
 
-The overall size of the puzzle must be a multiple of both the
-horizontal and vertical rectangle size.
 
-Beginning with version 0.005_01, the overall size value is optional,
-and defaults to the product of the horizontal and vertical
-dimensions. B<Note> that I am B<strongly> considering eliminating this
-value, since it appears to me that any value other than the default
-results in an impossible puzzle. As of version 0.005_01, specification
-of the third value is deprecated. At the first release after September 1
-2016 a warning will be displayed the first time three values are
-supplied. After a further six months this will progress to a warning
-every time three values are supplied. Finally, supplying three values
-will become a fatal error.
+Originally there was a third argument giving the total size of the
+puzzle. Beginning with version 0.005_01 this was deprecated, since it
+appeared to me to be redundant. As of version [%% next_version %%]
+specification of this will result in a warning. As of the first release
+after September 15 2018, all uses of this argument will result in a
+warning, and six month after that it will become fatal.
 
 Setting this attribute modifies the following "real" attributes:
 
@@ -190,7 +184,7 @@ Setting this attribute modifies the following "real" attributes:
  symbols is set to "." and the numbers "1", "2",
    and so on, up to the size of the big square;
  topology is set to represent the rows,  columns,
-   and small squares in the big square, with row
+   and small rectangles in the big square, with row
    sets named "r0", "r1", and so on, column sets
    named "c0", "c1", and so on, and small
    rectangle sets named "s0", "s1", and so on for
@@ -2261,7 +2255,7 @@ eod
     my %deprecate = (
 	brick_third_argument	=> {
 	    message	=> 'Specifying 3 values for set( brick => ... ) is deprecated',
-	    level	=> 0,
+	    level	=> 1,
 	},
     );
 
