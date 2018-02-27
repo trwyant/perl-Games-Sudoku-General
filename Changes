@@ -1,4 +1,4 @@
-0.018_01	2018-02-20	T. R. Wyant
+0.019		2018-02-27	T. R. Wyant
     Further deprecate third value for 'set brick'. It now warns on the
     first use. This was the puzzle size, which can be derived from the
     other two.
