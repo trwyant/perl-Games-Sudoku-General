@@ -651,7 +651,7 @@ This setting does not correspond to any attribute of the underlying
 L<Games::Sudoku::General> object. It is the name of the command to be
 used to launch a web browser. If this is set to a value which is true
 in the Perl sense, it will be used by the help command to launch a web
-browser and open L<http://search.cpan.org/dist/Games-Sudoku-General/>.
+browser and open L<https://metacpan.org/release/Games-Sudoku-General>.
 
 Mac OS X users will find C<'open'> a useful value; Windows users will
 find C<'start'> useful. All others should probably use the name of your
