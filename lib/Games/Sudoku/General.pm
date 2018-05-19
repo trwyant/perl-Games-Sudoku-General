@@ -578,7 +578,7 @@ use warnings;
 
 use Exporter qw{ import };
 
-our $VERSION = '0.019';
+our $VERSION = '0.019_01';
 our @EXPORT_OK = qw{
     SUDOKU_SUCCESS
     SUDOKU_NO_SOLUTION
