@@ -13,7 +13,7 @@ use Text::ParseWords;
 
 my %opt;
 
-GetOptions (\%opt, qw{filter}) or die <<eod;
+GetOptions (\%opt, qw{filter}) or die <<'EOD';
 
 Solve Sudoku and Sudoku-like puzzles.
 
@@ -24,14 +24,14 @@ where the only valid option at the moment is
     suppresses the front matter in the output, making the script more
     useful as a Unix-style filter.
 
-eod
+EOD
 
 our $VERSION = '0.019';
 
 my $rdln = Term::ReadLine->new ('Solve Sudoku and other set-allocation puzzles');
 my $OUT = $rdln->OUT || \*STDOUT;
 
-print $OUT <<eod unless $opt{filter};
+print $OUT <<'EOD' unless $opt{filter};
 sudokug version $VERSION
 based on Games::Sudoku::General version @{[Games::Sudoku::General->VERSION]}
 Perl $Config{version} under $Config{osname}
@@ -42,7 +42,7 @@ Copyright (C) 2005-2006, 2008, 2011-2018 by Thomas R. Wyant, III
 
 Enter 'help' for help, and terms of use.
 
-eod
+EOD
 
 my $su = Games::Sudoku::General->new ();
 my @handles;
@@ -73,9 +73,9 @@ while (1) {
     last if $verb eq 'exit';
     eval {
 	if ($verb =~ m/\W/ || $verb =~ m/^_/ || $verb eq 'new') {
-	    die <<eod;
+	    die <<"EOD";
 Warning - Verb '$verb' is not recognized. Enter 'help' for help.
-eod
+EOD
 	    }
 	  elsif (my $code = __PACKAGE__->can($verb)) {
 	    $code->(@args);
@@ -85,9 +85,9 @@ eod
 	    print "$rslt\n" if defined $rslt && !ref $rslt;
 	    }
 	  else {
-	    die <<eod;
+	    die <<"EOD";
 Warning - Verb '$verb' is not recognized. Enter 'help' for help.
-eod
+EOD
 	    }
 	1;
 	} or warn $@;
@@ -117,7 +117,7 @@ sub get {
 sub help {
     if (my $cmd = $parm{webcmd}) {
 	system {$cmd} $cmd,
-	    'http://search.cpan.org/dist/Games-Sudoku-General/';
+	    'https://metacpan.org/release/Games-Sudoku-General';
     } else {
 	my $os_specific = "_help_$^O";
 	__PACKAGE__->can ($os_specific) ? __PACKAGE__->$os_specific :
@@ -129,16 +129,15 @@ sub help {
 }
 
 sub _help_MacOS {
-    print <<eod;
+    print <<'EOD';
 
 Normally, we would display the documentation for the sudokug
 script here. But unfortunately this depends on the ability to
 spawn the perldoc command, and we do not have this ability under
 Mac OS 9 and earlier. You can find the same thing online at
-http://search.cpan.org/~wyant/Games-Sudoku-General-@{[
-    Games::Sudoku::General->VERSION]}/bin/sudokug
+https://metacpan.org/pod/distribution/Games-Sudoku-General/bin/sudokug
 
-eod
+EOD
     return;
 }
 
@@ -163,10 +162,10 @@ sub solution {
 
 sub source {
     my $fn = shift;
-    my $fh = FileHandle->new ("<$fn") or die <<eod;
+    my $fh = FileHandle->new ("<$fn") or die <<"EOD";
 Error - Failed to open input file $fn.
         $!
-eod
+EOD
     return unshift @handles, $fh;
 }
 
@@ -203,17 +202,17 @@ sudokug - Script to solve sudoku-like puzzles.
 
  (front matter displayed here)
 
- sudokug> problem <<eod
- eod: . . . 4 . . 7 8 9
- eod: 4 . 6 . . . 1 . .
- eod: . 8 . . . . . 5 .
- eod: 2 . 4 . . 5 . . .
- eod: . 9 5 . . . . . .
- eod: . . . 9 . 2 3 4 5
- eod: . 3 . . 7 . 9 . 8
- eod: . 6 7 . . 1 . . .
- eod: 9 . . . . 8 . . 2
- eod: eod
+ sudokug> problem <<EOD
+ EOD: . . . 4 . . 7 8 9
+ EOD: 4 . 6 . . . 1 . .
+ EOD: . 8 . . . . . 5 .
+ EOD: 2 . 4 . . 5 . . .
+ EOD: . 9 5 . . . . . .
+ EOD: . . . 9 . 2 3 4 5
+ EOD: . 3 . . 7 . 9 . 8
+ EOD: . 6 7 . . 1 . . .
+ EOD: 9 . . . . 8 . . 2
+ EOD: EOD
  sudokug> solution
  1 2 3 4 5 6 7 8 9
  4 5 6 7 8 9 1 2 3
@@ -464,10 +463,10 @@ Any readable attribute may be displayed with the 'get' or 'show'
 commands, and any writable attribute may be set with the 'set'
 command. For example:
 
- sudokug> set allowed_symbols <<eod
- eod: e=2,4,6,8
- eod: o=1,3,5,7,9
- eod: eod
+ sudokug> set allowed_symbols <<EOD
+ EOD: e=2,4,6,8
+ EOD: o=1,3,5,7,9
+ EOD: EOD
  sudokug>
 
 The following simply lists the attributes. Rather than repeat their
@@ -654,8 +653,8 @@ used to launch a web browser. If this is set to a value which is true
 in the Perl sense, it will be used by the help command to launch a web
 browser and open L<http://search.cpan.org/dist/Games-Sudoku-General/>.
 
-Mac OS X users will find 'open' a useful value; Windows users will find
-'start' useful. All others should probably use the name of your
+Mac OS X users will find C<'open'> a useful value; Windows users will
+find C<'start'> useful. All others should probably use the name of your
 preferred browser.
 
 =back
