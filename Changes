@@ -1,8 +1,4 @@
-0.019_02	2018-05-19	T. R. Wyant
-    REALLY get rid of search.cpan.org. The previous commit missed a
-    bunch of documentation.
-
-0.019_01	2018-05-19	T. R. Wyant
+0.020		2018-05-28	T. R. Wyant
     Remove references to search.cpan.org. Sigh.
 
 0.019		2018-02-27	T. R. Wyant
