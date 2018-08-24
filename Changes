@@ -1,4 +1,4 @@
-0.020_01	2018-08-16	T. R. Wyant
+0.021		2018-08-24	T. R. Wyant
     Further deprecate third 'set brick' argument. It now warns on every
     use.
 
