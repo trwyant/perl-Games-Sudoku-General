@@ -172,10 +172,10 @@ generates a topology that looks like this
 
 
 Originally there was a third argument giving the total size of the
-puzzle. Beginning with version 0.005_01 this was deprecated, since it
-appeared to me to be redundant. As of version [% next_version %],
-all uses of this argument will result in a warning. Six months after
-that it will become fatal.
+puzzle. Beginning with version 0.006 this was deprecated, since it
+appeared to me to be redundant. As of version 0.021, all uses of this
+argument resulted in a warning. As of version 0.022, use of the third
+argument will become fatal.
 
 Setting this attribute modifies the following "real" attributes:
 
@@ -2253,8 +2253,8 @@ eod
 
     my %deprecate = (
 	brick_third_argument	=> {
-	    message	=> 'Specifying 3 values for set( brick => ... ) is deprecated',
-	    level	=> 2,
+	    message	=> 'Specifying 3 values for set( brick => ... ) is no longer allowed',
+	    level	=> 3,
 	},
     );
 
