@@ -631,7 +631,7 @@ The default is a single space.
 
 This pseudo-attribute sets the topology, symbols, and columns for a
 quincunx puzzle, which is five 'normal' sudoku puzzles joined at the
-corners, such as 'Samurai Sudoku' (L<http://www.samurai-sudoku.com/>).
+corners, such as 'Samurai Sudoku' (L<https://www.samurai-sudoku.com/>).
 
 The argument is a string of one or two integers, separated by a comma
 if two are specified.
