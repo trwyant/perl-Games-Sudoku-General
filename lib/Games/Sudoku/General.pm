@@ -2466,7 +2466,7 @@ in understanding the mechanics of solving Sudoku puzzles.
 
 Ed Pegg, Jr, whose Mathematical Association of America C<Math Games>
 column number 41 for September 5 2005 ("Sudoku Variations",
-L<http://mathpuzzle.com/MAA/41-Sudoku%20Variations/mathgames_09_05_05.html>)
+L<https://mathpuzzle.com/MAA/41-Sudoku%20Variations/mathgames_09_05_05.html>)
 provided a treasure trove of 'non-standard' Sudoku puzzles.
 
 =head1 SEE ALSO
