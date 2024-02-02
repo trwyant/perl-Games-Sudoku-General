@@ -1661,7 +1661,7 @@ element is the name of the constraint applied:
  ? = no constraint: generated in backtrack mode.
 
 See C<http://www.research.att.com/~gsf/sudoku/> and
-L<http://www.angusj.com/sudoku/hints.php> for fuller
+L<https://www.angusj.com/sudoku/hints.php> for fuller
 definitions of the constraints and how they are applied. The
 L<ACKNOWLEDGMENTS|/ACKNOWLEDGMENTS> section addresses why the former
 URL is not an actual POD link.
@@ -2458,10 +2458,12 @@ a reference implementation for checking the solutions of standard Sudoku
 puzzles, and whose constraint taxonomy data set provided invaluable test
 data. Dr. Fowler has left AT&T, and the above link is no longer valid,
 but is retained for documentation, and for use in (e.g.) the Wayback
-Machine. Some of the material is available at L<http://gsf.cococlyde.org/>.
+Machine. Some of the material was available at
+C<http://gsf.cococlyde.org/>, but as of February 2 2024 this redirects
+to Google and requires a login.
 
 Angus Johnson, whose fulsome explanation at
-L<http://www.angusj.com/sudoku/hints.php> was a great help
+L<https://www.angusj.com/sudoku/hints.php> was a great help
 in understanding the mechanics of solving Sudoku puzzles.
 
 Ed Pegg, Jr, whose Mathematical Association of America C<Math Games>
