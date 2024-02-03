@@ -50,6 +50,7 @@ quads
 quincunx
 Samurai
 square's
+Steffen
 sudoku
 sudokug
 SudokuTk

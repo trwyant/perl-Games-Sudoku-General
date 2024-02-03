@@ -2519,6 +2519,11 @@ L<https://metacpan.org/dist/Games-YASudoku>) also solves the standard
 9x9 version of the puzzle. In contrast to the other packages, this one
 represents the board as a list of cell/value pairs.
 
+The C<Games-Sudoku-PatternSolver> package by Steffen Heinrich (see
+L<https://metacpan.org/dist/Games-Sudoku-PatternSolver>) both solves and
+generates 9x9 Sudoku puzzles. Generated puzzles can be exported to HTML
+and played in a browser.
+
 =head1 AUTHOR
 
 Thomas R. Wyant, III (F<wyant at cpan dot org>)
