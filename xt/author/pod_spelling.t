@@ -29,6 +29,7 @@ executables
 Fowler's
 Guine
 filename
+Html
 Ishigaki
 Lite
 Kenichi
@@ -45,6 +46,7 @@ O'Neill
 OO
 pbcopy
 pbpaste
+Pdf
 Pegg
 quads
 quincunx
