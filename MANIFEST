@@ -10,8 +10,8 @@ inc/My/Module/Meta.pm
 inc/My/Module/Recommend.pm
 inc/My/Module/Recommend/Any.pm
 lib/Games/Sudoku/General.pm
-LICENSES/Artistic
-LICENSES/Copying
+LICENSE-Artistic
+LICENSE-GPL
 Makefile.PL
 MANIFEST
 MANIFEST.SKIP
