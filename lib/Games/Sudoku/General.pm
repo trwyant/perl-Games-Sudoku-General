@@ -2441,9 +2441,10 @@ The X, Y, and W constraints (to use Glenn Fowler's terminology) are
 not yet handled. The package can solve puzzles that need these
 constraints, but it does so by backtracking.
 
+=head1 SUPPORT
+
 Support is by the author. Please file bug reports at
-L<https://rt.cpan.org/Public/Dist/Display.html?Name=Games-Sudoku-General>,
-L<https://github.com/trwyant/perl-Games-Sudoku-General/issues>, or in
+L<https://github.com/trwyant/perl-Games-Sudoku-General/issues> or in
 electronic mail to the author.
 
 =head1 ACKNOWLEDGMENTS
